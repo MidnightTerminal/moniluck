@@ -1,0 +1,41 @@
+.auth-card--wide {
+  max-width: 520px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 480px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/* ─── Password Strength Meter ────────────────────────────────────────────── */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  margin-top: -8px;
+}
+
+.password-strength__bar {
+  flex: 1;
+  height: 4px;
+  background: var(--light-gray);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.password-strength__fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.password-strength__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

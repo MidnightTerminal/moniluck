@@ -1,0 +1,418 @@
+# ============================================================
+# MONILUCK E-COMMERCE — .gitignore
+# ============================================================
+
+
+# ============================================================
+# DEPENDENCIES
+# ============================================================
+
+# Node modules (all levels)
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Package lock files (keep package.json, ignore locks if preferred)
+# Uncomment below if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+
+
+# ============================================================
+# ENVIRONMENT & SECRETS
+# ============================================================
+
+# All .env files (NEVER commit secrets)
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+.env.staging.local
+
+# Backend specific env
+backend/.env
+backend/.env.*
+
+# Frontend specific env
+frontend/.env
+frontend/.env.*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+
+# ============================================================
+# BUILD OUTPUT
+# ============================================================
+
+# React production build
+frontend/build/
+frontend/dist/
+
+# Backend build (if using TypeScript or bundler)
+backend/build/
+backend/dist/
+
+# General build folders
+build/
+dist/
+out/
+
+
+# ============================================================
+# LOGS
+# ============================================================
+
+# npm / yarn / node logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime logs
+backend/logs/
+backend/*.log
+combined.log
+error.log
+access.log
+
+
+# ============================================================
+# DATABASE
+# ============================================================
+
+# SQLite databases (if ever used)
+*.sqlite
+*.sqlite3
+*.db
+
+# MySQL dumps
+*.sql.gz
+*.dump
+
+# Database backup files
+backup/
+backups/
+db-backups/
+
+
+# ============================================================
+# OPERATING SYSTEM FILES
+# ============================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+
+# ============================================================
+# EDITORS & IDEs
+# ============================================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+
+# Vim / Neovim
+*.swp
+*.swo
+*.swn
+*~
+.netrwhist
+Session.vim
+.vim/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# Atom
+.atom/
+
+# Eclipse
+.project
+.classpath
+.settings/
+.metadata/
+
+
+# ============================================================
+# TESTING
+# ============================================================
+
+# Test coverage reports
+coverage/
+**/coverage/
+.nyc_output/
+*.lcov
+lcov.info
+
+# Jest
+jest.config.local.js
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+
+# ============================================================
+# CACHING
+# ============================================================
+
+# npm cache
+.npm/
+.cache/
+**/cache/
+
+# eslint cache
+.eslintcache
+
+# prettier cache
+.prettiercache
+.prettier_cache
+
+# stylelint cache
+.stylelintcache
+
+# Parcel cache
+.parcel-cache/
+
+# Next.js (if ever migrated)
+.next/
+
+# Nuxt.js
+.nuxt/
+
+# Gatsby
+.cache/
+public/
+
+# webpack
+.webpack/
+
+
+# ============================================================
+# UPLOADS & MEDIA
+# ============================================================
+
+# User uploaded files (should be stored on cloud storage)
+backend/public/uploads/
+backend/uploads/
+frontend/public/uploads/
+
+# Large media files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wmv
+*.flv
+*.webm
+
+# Large image files (keep small optimized ones)
+# *.psd
+# *.ai
+# *.sketch
+
+
+# ============================================================
+# SSL CERTIFICATES
+# ============================================================
+
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+ssl/
+certs/
+
+
+# ============================================================
+# DOCKER (if added later)
+# ============================================================
+
+# Docker override files
+docker-compose.override.yml
+docker-compose.local.yml
+.docker/
+
+# Docker volumes
+docker-volumes/
+
+
+# ============================================================
+# TEMPORARY FILES
+# ============================================================
+
+# Temp directories
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+# Lock files (application level, not package managers)
+*.lock
+!package-lock.json
+!yarn.lock
+
+
+# ============================================================
+# MISC
+# ============================================================
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# TypeScript build info (if TS ever added)
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env.vault
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# Storybook
+storybook-static/
+.storybook/
+
+# Sentry
+.sentryclirc
+
+# Vercel
+.vercel/
+
+# Netlify
+.netlify/
+
+# PM2
+ecosystem.config.js.bak
+.pm2/
+
+
+# ============================================================
+# PROJECT SPECIFIC
+# ============================================================
+
+# Local development notes (keep your notes private)
+NOTES.md
+TODO.local.md
+local-notes.txt
+dev-notes.txt
+
+# Local config overrides
+config.local.js
+config.local.json
+settings.local.js
+
+# Generated documentation
+docs/generated/
+api-docs/
+
+# Seed data with real info
+backend/seeders/private/
+backend/data/real/
+
+# Payment gateway test keys log
+payment-test-keys.txt
+stripe-test.txt

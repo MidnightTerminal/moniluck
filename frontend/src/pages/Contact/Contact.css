@@ -1,0 +1,171 @@
+/* ─── Hero ───────────────────────────────────────────────────────────────── */
+.contact-hero {
+  position: relative;
+  padding: var(--space-4xl) 0 var(--space-3xl);
+  overflow: hidden;
+}
+
+.contact-hero__bg {
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-primary);
+  opacity: 0.06;
+}
+
+.contact-hero__content { text-align: center; }
+
+.contact-hero__title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  color: var(--text-dark);
+  margin-bottom: var(--space-md);
+}
+
+.contact-hero__title span {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.contact-hero__subtitle {
+  font-size: 1.05rem;
+  color: var(--text-mid);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ─── Grid ───────────────────────────────────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: var(--space-3xl);
+  align-items: start;
+}
+
+/* ─── Info Side ──────────────────────────────────────────────────────────── */
+.contact-info__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: var(--space-md);
+}
+
+.contact-info__desc {
+  font-size: 0.95rem;
+  color: var(--text-mid);
+  line-height: 1.7;
+  margin-bottom: var(--space-xl);
+}
+
+.contact-info__list { display: flex; flex-direction: column; gap: var(--space-lg); margin-bottom: var(--space-xl); }
+
+.contact-info__item {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+
+.contact-info__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: rgba(102,126,234,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-info__icon .material-icons-round { color: var(--primary); font-size: 1.2rem; }
+
+.contact-info__item h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.contact-info__item p,
+.contact-info__item a {
+  font-size: 0.88rem;
+  color: var(--text-mid);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.contact-info__item a:hover { color: var(--primary); }
+
+.contact-map-placeholder {
+  width: 100%;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  background: var(--light-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  color: var(--text-light);
+}
+
+.contact-map-placeholder .material-icons-round { font-size: 2rem; opacity: 0.4; }
+.contact-map-placeholder p { font-size: 0.85rem; }
+
+/* ─── Form Side ──────────────────────────────────────────────────────────── */
+.contact-form-wrapper {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  border: 2px solid var(--light-gray);
+  box-shadow: var(--shadow-card);
+}
+
+.contact-form__title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: var(--space-xl);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+/* ─── Success ────────────────────────────────────────────────────────────── */
+.contact-success {
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+.contact-success__icon {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--success-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-lg);
+}
+
+.contact-success__icon .material-icons-round { font-size: 3rem; color: var(--success); }
+
+.contact-success h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-sm);
+}
+
+.contact-success p {
+  color: var(--text-mid);
+  margin-bottom: var(--space-xl);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr; gap: var(--space-xl); }
+  .contact-form-wrapper { padding: var(--space-xl); }
+  .form-row { grid-template-columns: 1fr; }
+}

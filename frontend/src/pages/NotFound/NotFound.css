@@ -1,0 +1,42 @@
+.notfound-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: var(--space-2xl);
+}
+
+.notfound-content { text-align: center; }
+
+.notfound-code {
+  font-size: clamp(6rem, 15vw, 10rem);
+  font-weight: 900;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: var(--space-md);
+}
+
+.notfound-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: var(--space-md);
+}
+
+.notfound-message {
+  font-size: 1rem;
+  color: var(--text-mid);
+  max-width: 440px;
+  margin: 0 auto var(--space-xl);
+  line-height: 1.7;
+}
+
+.notfound-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}

@@ -1,0 +1,85 @@
+.featured { background: var(--off-white); }
+
+/* ─── Filters ────────────────────────────────────────────────────────────── */
+.featured__filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-2xl);
+}
+
+.featured__filter-btn {
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: var(--white);
+  color: var(--text-mid);
+  border: 2px solid var(--mid-gray);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.featured__filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.featured__filter-btn.active {
+  background: var(--gradient-primary);
+  color: var(--white);
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
+}
+
+/* ─── Grid ───────────────────────────────────────────────────────────────── */
+.featured__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+}
+
+/* ─── View All ───────────────────────────────────────────────────────────── */
+.featured__view-all {
+  text-align: center;
+  margin-top: var(--space-2xl);
+}
+
+/* ─── Empty ──────────────────────────────────────────────────────────────── */
+.featured__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-3xl);
+  color: var(--text-mid);
+}
+
+.featured__empty .material-icons-round {
+  font-size: 3rem;
+  opacity: 0.3;
+  margin-bottom: var(--space-md);
+  display: block;
+}
+
+/* ─── Skeleton ───────────────────────────────────────────────────────────── */
+.product-card-skeleton {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--mid-gray);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .featured__grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .featured__grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-md); }
+}
+
+@media (max-width: 480px) {
+  .featured__grid { grid-template-columns: 1fr; }
+  .featured__filter-btn { padding: 8px 16px; font-size: 0.82rem; }
+}
