@@ -249,7 +249,7 @@ cypress/downloads/
 
 # Gatsby
 .cache/
-public/
+# public/
 
 # webpack
 .webpack/

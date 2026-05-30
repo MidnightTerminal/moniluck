@@ -13,6 +13,7 @@ const authRoutes    = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const cartRoutes    = require('./routes/cartRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const adminRoutes   = require('./routes/adminRoutes');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -24,9 +25,12 @@ app.use(helmet({
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin     : process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'http://localhost:3001',  // Admin panel
+  ],
   credentials: true,
-  methods    : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
@@ -74,6 +78,7 @@ app.use('/api/auth',     authLimiter, authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart',     cartRoutes);
 app.use('/api/contact',  contactRoutes);
+app.use('/api/admin',    adminRoutes);
 
 // ─── Error Handling ───────────────────────────────────────────────────────────
 app.use(notFound);
