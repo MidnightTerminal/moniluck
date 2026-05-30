@@ -148,14 +148,14 @@ const CartSidebar = () => {
                 {cartSavings > 0 && (
                   <div className="cart-sidebar__savings">
                     <span className="material-icons-round">local_offer</span>
-                    You're saving <strong>${cartSavings.toFixed(2)}</strong>!
+                    You're saving <strong>Tk {cartSavings.toFixed(2)}</strong>!
                   </div>
                 )}
 
                 <div className="cart-sidebar__totals">
                   <div className="cart-sidebar__total-row">
                     <span>Subtotal</span>
-                    <span className="cart-sidebar__total-value">${cartSubtotal.toFixed(2)}</span>
+                    <span className="cart-sidebar__total-value">Tk {cartSubtotal.toFixed(2)}</span>
                   </div>
                   <p className="cart-sidebar__shipping-note">Shipping calculated at checkout</p>
                 </div>

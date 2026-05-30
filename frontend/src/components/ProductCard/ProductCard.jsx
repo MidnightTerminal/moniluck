@@ -117,10 +117,10 @@ const ProductCard = ({ product }) => {
 
         {/* Price */}
         <div className="product-card__pricing">
-          <span className="product-card__price">${parseFloat(product.price).toFixed(2)}</span>
+          <span className="product-card__price">Tk {parseFloat(product.price).toFixed(2)}</span>
           {product.compare_price && product.compare_price > product.price && (
             <span className="product-card__compare-price">
-              ${parseFloat(product.compare_price).toFixed(2)}
+              Tk {parseFloat(product.compare_price).toFixed(2)}
             </span>
           )}
         </div>

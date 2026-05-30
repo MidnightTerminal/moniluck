@@ -88,7 +88,7 @@ const Orders = () => {
                     <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-light)' }}>{o.ship_email}</span>
                   </td>
                   <td>{o.item_count}</td>
-                  <td style={{ fontWeight: 700 }}>${parseFloat(o.total).toFixed(2)}</td>
+                  <td style={{ fontWeight: 700 }}>Tk {parseFloat(o.total).toFixed(2)}</td>
                   <td><span className={`admin-badge ${statusColors[o.status] || 'admin-badge-neutral'}`}>{o.status}</span></td>
                   <td><span className={`admin-badge ${paymentColors[o.payment_status] || 'admin-badge-neutral'}`}>{o.payment_status}</span></td>
                   <td style={{ fontSize: '0.82rem', color: 'var(--admin-text-secondary)' }}>

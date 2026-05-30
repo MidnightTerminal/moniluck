@@ -402,10 +402,10 @@ const Profile = () => {
                           </Link>
                           <span className="wishlist-item__category">{item.category_name}</span>
                           <div className="wishlist-item__pricing">
-                            <span className="wishlist-item__price">${parseFloat(item.price).toFixed(2)}</span>
+                            <span className="wishlist-item__price">Tk {parseFloat(item.price).toFixed(2)}</span>
                             {item.compare_price && (
                               <span className="wishlist-item__old-price">
-                                ${parseFloat(item.compare_price).toFixed(2)}
+                                Tk {parseFloat(item.compare_price).toFixed(2)}
                               </span>
                             )}
                           </div>
@@ -485,7 +485,7 @@ const Profile = () => {
                           </div>
                           <div>
                             <span className="track-order__label">Total</span>
-                            <strong>${parseFloat(selectedTrackOrder.total).toFixed(2)}</strong>
+                            <strong>Tk {parseFloat(selectedTrackOrder.total).toFixed(2)}</strong>
                           </div>
                         </div>
 
@@ -605,7 +605,7 @@ const Profile = () => {
                           </div>
                           <div>
                             <span className="order-card__label">Total</span>
-                            <strong>${parseFloat(order.total).toFixed(2)}</strong>
+                            <strong>Tk {parseFloat(order.total).toFixed(2)}</strong>
                           </div>
                         </div>
                       </div>

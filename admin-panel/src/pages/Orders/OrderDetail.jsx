@@ -91,9 +91,9 @@ const OrderDetail = () => {
                   {(order.items || []).map(item => (
                     <tr key={item.id}>
                       <td style={{ fontWeight: 600 }}>{item.product_name}</td>
-                      <td>${parseFloat(item.price).toFixed(2)}</td>
+                      <td>Tk {parseFloat(item.price).toFixed(2)}</td>
                       <td>{item.quantity}</td>
-                      <td style={{ fontWeight: 700 }}>${parseFloat(item.total).toFixed(2)}</td>
+                      <td style={{ fontWeight: 700 }}>Tk {parseFloat(item.total).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -108,12 +108,12 @@ const OrderDetail = () => {
           <div className="admin-card" style={{ marginBottom: 24 }}>
             <h3 className="admin-card-title">Summary</h3>
             <div className="order-summary-rows">
-              <div className="order-summary-row"><span>Subtotal</span><span>${parseFloat(order.subtotal).toFixed(2)}</span></div>
-              <div className="order-summary-row"><span>Shipping</span><span>${parseFloat(order.shipping_cost).toFixed(2)}</span></div>
+              <div className="order-summary-row"><span>Subtotal</span><span>Tk {parseFloat(order.subtotal).toFixed(2)}</span></div>
+              <div className="order-summary-row"><span>Shipping</span><span>Tk {parseFloat(order.shipping_cost).toFixed(2)}</span></div>
               {parseFloat(order.discount) > 0 && (
-                <div className="order-summary-row" style={{ color: 'var(--admin-success)' }}><span>Discount</span><span>-${parseFloat(order.discount).toFixed(2)}</span></div>
+                <div className="order-summary-row" style={{ color: 'var(--admin-success)' }}><span>Discount</span><span>-Tk {parseFloat(order.discount).toFixed(2)}</span></div>
               )}
-              <div className="order-summary-row order-summary-total"><span>Total</span><span>${parseFloat(order.total).toFixed(2)}</span></div>
+              <div className="order-summary-row order-summary-total"><span>Total</span><span>Tk {parseFloat(order.total).toFixed(2)}</span></div>
             </div>
             <div style={{ marginTop: 12, fontSize: '0.82rem', color: 'var(--admin-text-secondary)' }}>
               Payment: <strong style={{ textTransform: 'capitalize' }}>{order.payment_method}</strong>

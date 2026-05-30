@@ -25,7 +25,7 @@ const Dashboard = () => {
   const { stats, recentOrders, topProducts, lowStock, ordersByStatus, monthlyRevenue } = data || {};
 
   const statCards = [
-    { label: 'Total Revenue',    value: `$${(stats?.totalRevenue || 0).toLocaleString()}`, icon: 'attach_money',     color: '#10b981', bg: '#d1fae5' },
+    { label: 'Total Revenue',    value: `TK ${(stats?.totalRevenue || 0).toLocaleString()}`, icon: 'attach_money',     color: '#10b981', bg: '#d1fae5' },
     { label: 'Total Orders',     value: stats?.totalOrders || 0,     icon: 'receipt_long',    color: '#6366f1', bg: '#e0e7ff' },
     { label: 'Active Products',  value: stats?.activeProducts || 0,  icon: 'inventory_2',     color: '#f59e0b', bg: '#fef3c7' },
     { label: 'Total Customers',  value: stats?.totalUsers || 0,      icon: 'people',          color: '#3b82f6', bg: '#dbeafe' },
@@ -144,7 +144,7 @@ const Dashboard = () => {
                     <td><Link to={`/admin/orders/${order.id}`} style={{ color: 'var(--admin-primary)', fontWeight: 600 }}>{order.order_number}</Link></td>
                     <td>{order.customer_name}</td>
                     <td><span className={`admin-badge ${getStatusBadge(order.status)}`}>{order.status}</span></td>
-                    <td style={{ fontWeight: 700 }}>${parseFloat(order.total).toFixed(2)}</td>
+                    <td style={{ fontWeight: 700 }}>Tk {parseFloat(order.total).toFixed(2)}</td>
                   </tr>
                 ))}
                 {(!recentOrders || !recentOrders.length) && (

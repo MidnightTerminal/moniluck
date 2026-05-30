@@ -2,7 +2,7 @@
  * Format price with currency symbol
  */
 export const formatPrice = (price) => {
-  return `$${parseFloat(price).toFixed(2)}`;
+  return `Tk ${parseFloat(price).toFixed(2)}`;
 };
 
 /**

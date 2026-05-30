@@ -6,6 +6,7 @@
   display: flex;
   align-items: center;
 }
+
 /* ─── Skeleton ───────────────────────────────────────────────────────────── */
 .pd-skeleton {
   display: grid;

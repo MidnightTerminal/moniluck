@@ -250,10 +250,10 @@ const ProductDetail = () => {
 
             {/* Price */}
             <div className="pd-info__pricing">
-              <span className="pd-info__price">${parseFloat(product.price).toFixed(2)}</span>
+              <span className="pd-info__price">Tk {parseFloat(product.price).toFixed(2)}</span>
               {product.compare_price && product.compare_price > product.price && (
                 <span className="pd-info__compare-price">
-                  ${parseFloat(product.compare_price).toFixed(2)}
+                  Tk {parseFloat(product.compare_price).toFixed(2)}
                 </span>
               )}
               {discount > 0 && (

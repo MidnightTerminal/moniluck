@@ -10,9 +10,9 @@ const PriceDisplay = ({ price, comparePrice, size = 'md', showBadge = true }) =>
 
   return (
     <div className={`price-display price-display--${size}`}>
-      <span className="price-display__current">${current.toFixed(2)}</span>
+      <span className="price-display__current">Tk {current.toFixed(2)}</span>
       {compare && compare > current && (
-        <span className="price-display__compare">${compare.toFixed(2)}</span>
+        <span className="price-display__compare">Tk {compare.toFixed(2)}</span>
       )}
       {showBadge && discount > 0 && (
         <span className="price-display__badge">-{discount}%</span>

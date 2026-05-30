@@ -137,7 +137,7 @@ INSERT INTO site_settings (setting_key, setting_val, setting_type, description) 
   ('contact_address',    'Dhaka, Bangladesh',                        'text',    'Contact address'),
   ('free_shipping_min',  '50',                                       'number',  'Free shipping minimum order'),
   ('shipping_cost',      '5.99',                                     'number',  'Standard shipping cost'),
-  ('currency_symbol',    '$',                                        'text',    'Currency symbol'),
+  ('currency_symbol',    'Tk',                                       'text',    'Currency symbol'),
   ('social_facebook',    '',                                         'text',    'Facebook URL'),
   ('social_instagram',   '',                                         'text',    'Instagram URL'),
   ('social_twitter',     '',                                         'text',    'Twitter URL'),

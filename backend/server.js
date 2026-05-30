@@ -44,7 +44,13 @@ const limiter = rateLimit({
   legacyHeaders  : false,
   message: { success: false, message: 'Too many requests. Please try again later.' },
 });
-app.use('/api/', limiter);
+app.use('/api/', (req, res, next) => {
+  if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+    return next();
+  }
+
+  return limiter(req, res, next);
+});
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

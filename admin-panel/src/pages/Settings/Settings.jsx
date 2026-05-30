@@ -27,8 +27,8 @@ const settingsSections = [
     title: 'Shipping',
     icon: 'local_shipping',
     fields: [
-      { key: 'free_shipping_min', label: 'Free Shipping Minimum ($)', type: 'number' },
-      { key: 'shipping_cost',     label: 'Standard Shipping Cost ($)', type: 'number' },
+      { key: 'free_shipping_min', label: 'Free Shipping Minimum (Tk)', type: 'number' },
+      { key: 'shipping_cost',     label: 'Standard Shipping Cost (Tk)', type: 'number' },
     ],
   },
   {

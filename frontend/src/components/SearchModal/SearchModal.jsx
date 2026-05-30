@@ -85,9 +85,9 @@ const SearchModal = ({ isOpen, onClose }) => {
           {/* Modal */}
           <motion.div
             className="search-modal"
-            initial={{ opacity: 0, y: -30, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -30, scale: 0.95 }}
+            initial={{ opacity: 0, y: -30, scale: 0.95, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
+            exit={{ opacity: 0, y: -30, scale: 0.95, x: '-50%' }}
             transition={{ duration: 0.3 }}
           >
             {/* Search Input */}
@@ -144,10 +144,10 @@ const SearchModal = ({ isOpen, onClose }) => {
                         <span className="search-result-item__category">{product.category_name}</span>
                       </div>
                       <div className="search-result-item__price">
-                        ${parseFloat(product.price).toFixed(2)}
+                        Tk {parseFloat(product.price).toFixed(2)}
                         {product.compare_price && product.compare_price > product.price && (
                           <span className="search-result-item__old-price">
-                            ${parseFloat(product.compare_price).toFixed(2)}
+                            Tk {parseFloat(product.compare_price).toFixed(2)}
                           </span>
                         )}
                       </div>

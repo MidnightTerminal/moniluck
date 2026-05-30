@@ -260,7 +260,7 @@ const Users = () => {
                                 <tr key={o.id}>
                                   <td style={{ fontWeight: 600 }}>{o.order_number}</td>
                                   <td><span className={`admin-badge ${getStatusBadge(o.status)}`}>{o.status}</span></td>
-                                  <td style={{ fontWeight: 700 }}>${parseFloat(o.total).toFixed(2)}</td>
+                                  <td style={{ fontWeight: 700 }}>Tk {parseFloat(o.total).toFixed(2)}</td>
                                   <td style={{ fontSize: '0.82rem', color: 'var(--admin-text-secondary)' }}>
                                     {new Date(o.created_at).toLocaleDateString()}
                                   </td>

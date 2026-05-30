@@ -8,11 +8,10 @@
 
 .search-modal {
   position: fixed;
-  top: 80px;
+  top: 24px;
   left: 50%;
-  transform: translateX(-50%);
   width: min(640px, 92vw);
-  max-height: 70vh;
+  max-height: calc(100vh - 48px);
   background: var(--white);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
@@ -221,10 +220,9 @@
 @media (max-width: 640px) {
   .search-modal {
     top: 12px;
-    left: 12px;
-    right: 12px;
-    transform: none;
-    width: auto;
+    left: 50%;
+    right: auto;
+    width: min(640px, calc(100vw - 24px));
     max-height: calc(100vh - 24px);
     border-radius: 20px;
   }

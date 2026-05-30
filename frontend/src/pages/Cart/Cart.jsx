@@ -100,11 +100,11 @@ const Cart = () => {
                                     {/* Price */}
                                     <div className="cart-row__price" data-label="Price">
                                         <span className="cart-row__current-price">
-                                            ${parseFloat(item.price).toFixed(2)}
+                                            Tk {parseFloat(item.price).toFixed(2)}
                                         </span>
                                         {item.compare_price && item.compare_price > item.price && (
                                             <span className="cart-row__old-price">
-                                                ${parseFloat(item.compare_price).toFixed(2)}
+                                                Tk {parseFloat(item.compare_price).toFixed(2)}
                                             </span>
                                         )}
                                     </div>
@@ -176,7 +176,7 @@ const Cart = () => {
 
                         <div className="cart-summary__rows">
                             <div className="cart-summary__row">
-                                <span>Subtotal ({cartCount} items)</span>
+                                <span>Tk {cartSubtotal.toFixed(2)}</span>
                                 <span>${cartSubtotal.toFixed(2)}</span>
                             </div>
 
@@ -188,21 +188,21 @@ const Cart = () => {
                                         </span>
                                         Savings
                                     </span>
-                                    <span>-${cartSavings.toFixed(2)}</span>
+                                    <span>-Tk {cartSavings.toFixed(2)}</span>
                                 </div>
                             )}
 
                             <div className="cart-summary__row">
                                 <span>Shipping</span>
                                 <span className="cart-summary__free">
-                                    {cartSubtotal >= 50 ? 'Free' : '$5.99'}
+                                    {cartSubtotal >= 50 ? 'Free' : 'Tk 5.99'}
                                 </span>
                             </div>
 
                             {cartSubtotal < 50 && (
                                 <div className="cart-summary__free-shipping-msg">
                                     <span className="material-icons-round">info</span>
-                                    Add ${(50 - cartSubtotal).toFixed(2)} more for <strong>free shipping</strong>
+                                    Add Tk {(50 - cartSubtotal).toFixed(2)} more for <strong>free shipping</strong>
                                 </div>
                             )}
 
@@ -211,7 +211,7 @@ const Cart = () => {
                             <div className="cart-summary__row cart-summary__row--total">
                                 <span>Total</span>
                                 <span>
-                                    ${(cartSubtotal + (cartSubtotal >= 50 ? 0 : 5.99)).toFixed(2)}
+                                    Tk {(cartSubtotal + (cartSubtotal >= 50 ? 0 : 5.99)).toFixed(2)}
                                 </span>
                             </div>
                         </div>

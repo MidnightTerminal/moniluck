@@ -119,8 +119,8 @@ const Products = () => {
                     <td style={{ color: 'var(--admin-text-light)', fontFamily: 'monospace' }}>{p.sku}</td>
                     <td>{p.category_name || '—'}</td>
                     <td>
-                      <span style={{ fontWeight: 700 }}>${parseFloat(p.price).toFixed(2)}</span>
-                      {p.compare_price && <span style={{ textDecoration: 'line-through', color: 'var(--admin-text-light)', fontSize: '0.78rem', marginLeft: 6 }}>${parseFloat(p.compare_price).toFixed(2)}</span>}
+                      <span style={{ fontWeight: 700 }}>Tk {parseFloat(p.price).toFixed(2)}</span>
+                      {p.compare_price && <span style={{ textDecoration: 'line-through', color: 'var(--admin-text-light)', fontSize: '0.78rem', marginLeft: 6 }}>Tk {parseFloat(p.compare_price).toFixed(2)}</span>}
                     </td>
                     <td>
                       <span className={`admin-badge ${p.stock <= 0 ? 'admin-badge-error' : p.stock <= 10 ? 'admin-badge-warning' : 'admin-badge-success'}`}>

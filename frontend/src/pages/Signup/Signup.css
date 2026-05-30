@@ -12,6 +12,65 @@
   .form-row { grid-template-columns: 1fr; }
 }
 
+/* ─── Auth Form Enhancements ────────────────────────────────────────────── */
+.input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 1.15rem;
+  color: var(--gray);
+  pointer-events: none;
+  transition: var(--transition-base);
+  z-index: 1;
+}
+
+.form-input--icon {
+  padding-left: 44px;
+  padding-right: 44px;
+}
+
+.form-input--icon:focus ~ .input-icon,
+.input-icon-wrapper:focus-within .input-icon {
+  color: var(--primary);
+}
+
+.input-toggle-pass {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--gray);
+  padding: 4px;
+  display: flex;
+  transition: var(--transition-fast);
+  z-index: 1;
+}
+
+.input-toggle-pass:hover { color: var(--primary); }
+.input-toggle-pass .material-icons-round { font-size: 1.15rem; }
+
+.form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-submit-btn {
+  margin-top: var(--space-md);
+}
+
+.btn-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 /* ─── Password Strength Meter ────────────────────────────────────────────── */
 .password-strength {
   display: flex;

@@ -455,9 +455,9 @@ const Products = () => {
                   )}
                   {(filters.min_price || filters.max_price) && (
                     <span className="active-filter-tag">
-                      Price: {filters.min_price ? `$${filters.min_price}` : '$0'}
+                      Price: {filters.min_price ? `Tk ${filters.min_price}` : 'Tk 0'}
                       {' – '}
-                      {filters.max_price ? `$${filters.max_price}` : '∞'}
+                      {filters.max_price ? `Tk ${filters.max_price}` : '∞'}
                       <button onClick={() => { handleFilterChange('min_price', ''); handleFilterChange('max_price', ''); }}>
                         <span className="material-icons-round">close</span>
                       </button>

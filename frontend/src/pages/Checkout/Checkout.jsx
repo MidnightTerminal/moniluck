@@ -291,9 +291,9 @@ const Checkout = () => {
             <div className="checkout-section">
               <div className="shipping-methods">
                 {[
-                  { id: 'standard', name: 'Standard Delivery',  time: '5–7 Business Days', price: cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 'Free' : `$${SHIPPING_COST}`, icon: 'local_shipping' },
-                  { id: 'express',  name: 'Express Delivery',   time: '2–3 Business Days', price: '$12.99', icon: 'flight_takeoff' },
-                  { id: 'same_day', name: 'Same Day Delivery',  time: 'Dhaka Only',        price: '$19.99', icon: 'bolt' },
+                  { id: 'standard', name: 'Standard Delivery',  time: '5–7 Business Days', price: cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 'Free' : `Tk ${SHIPPING_COST}`, icon: 'local_shipping' },
+                  { id: 'express',  name: 'Express Delivery',   time: '2–3 Business Days', price: 'Tk 12.99', icon: 'flight_takeoff' },
+                  { id: 'same_day', name: 'Same Day Delivery',  time: 'Dhaka Only',        price: 'Tk 19.99', icon: 'bolt' },
                 ].map(method => (
                   <label
                     key={method.id}
@@ -610,7 +610,7 @@ const Checkout = () => {
                       <p>{item.brand}</p>
                     </div>
                     <span className="checkout-summary__item-price">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      Tk {(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -622,24 +622,24 @@ const Checkout = () => {
               <div className="checkout-summary__rows">
                 <div className="checkout-summary__row">
                   <span>Subtotal ({cartCount} items)</span>
-                  <span>${cartSubtotal.toFixed(2)}</span>
+                  <span>Tk {cartSubtotal.toFixed(2)}</span>
                 </div>
                 {cartSavings > 0 && (
                   <div className="checkout-summary__row checkout-summary__row--green">
                     <span>Savings</span>
-                    <span>-${cartSavings.toFixed(2)}</span>
+                    <span>-Tk {cartSavings.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="checkout-summary__row">
                   <span>Shipping</span>
                   <span className={shippingCost === 0 ? 'checkout-summary__free' : ''}>
-                    {shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`}
+                    {shippingCost === 0 ? 'Free' : `Tk ${shippingCost.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="checkout-summary__divider" />
                 <div className="checkout-summary__row checkout-summary__row--total">
                   <span>Total</span>
-                  <span>${orderTotal.toFixed(2)}</span>
+                  <span>Tk {orderTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
