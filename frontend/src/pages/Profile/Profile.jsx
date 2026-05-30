@@ -1,16 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { fetchMyOrders } from '../../utils/api';
 import './Profile.css';
+
+const PROFILE_TABS = [
+  { key: 'profile', label: 'Profile', icon: 'person' },
+  { key: 'password', label: 'Password', icon: 'lock' },
+  { key: 'track', label: 'Track Order', icon: 'local_shipping' },
+  { key: 'orders', label: 'Orders', icon: 'receipt_long' },
+  { key: 'wishlist', label: 'Wishlist', icon: 'favorite' },
+];
+
+const ORDER_TRACKING_STEPS = [
+  { key: 'pending', label: 'Order Placed' },
+  { key: 'confirmed', label: 'Confirmed' },
+  { key: 'processing', label: 'Processing' },
+  { key: 'shipped', label: 'Shipped' },
+  { key: 'delivered', label: 'Delivered' },
+];
+
+const TRACKING_STEP_INDEX = {
+  pending   : 0,
+  confirmed : 1,
+  processing: 2,
+  shipped   : 3,
+  delivered : 4,
+};
 
 const Profile = () => {
   const { user, updateProfile, changePassword, logout } = useAuth();
   const { wishlistItems, toggleWishlist } = useCart();
+  const location = useLocation();
 
   const [activeTab, setActiveTab] = useState('profile');
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState('');
 
   /* ─── Profile Form ──────────────────────────────────────────────────────── */
   const [profileData, setProfileData] = useState({
@@ -50,6 +80,48 @@ const Profile = () => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew]         = useState(false);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab && PROFILE_TABS.some(item => item.key === tab)) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (activeTab !== 'orders' && activeTab !== 'track') return;
+
+    const loadOrders = async () => {
+      setOrdersLoading(true);
+      try {
+        const { data } = await fetchMyOrders();
+        if (data.success) {
+          const nextOrders = data.orders || [];
+          setOrders(nextOrders);
+          setSelectedOrderId(prev => {
+            if (nextOrders.length === 0) return '';
+            const existingOrder = nextOrders.find(order => String(order.id) === String(prev));
+            return existingOrder ? String(existingOrder.id) : String(nextOrders[0].id);
+          });
+        }
+      } catch (error) {
+        toast.error('Failed to load orders.');
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    loadOrders();
+  }, [activeTab]);
+
+  const selectedTrackOrder = orders.find(order => String(order.id) === String(selectedOrderId)) || orders[0] || null;
+  const selectedOrderStep = TRACKING_STEP_INDEX[selectedTrackOrder?.status] ?? 0;
+
+  const formatTrackingDate = (value) => {
+    if (!value) return '—';
+    return new Date(value).toLocaleString();
+  };
+
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData(prev => ({ ...prev, [name]: value }));
@@ -78,12 +150,6 @@ const Profile = () => {
     if (result.success) setPasswordData({ current_password: '', new_password: '', confirm: '' });
   };
 
-  const tabs = [
-    { key: 'profile',  label: 'Profile',  icon: 'person' },
-    { key: 'password', label: 'Password', icon: 'lock' },
-    { key: 'wishlist', label: 'Wishlist', icon: 'favorite' },
-  ];
-
   return (
     <motion.div
       className="profile-page"
@@ -106,7 +172,7 @@ const Profile = () => {
         <div className="profile-layout">
           {/* Sidebar / Tabs */}
           <div className="profile-sidebar">
-            {tabs.map(tab => (
+            {PROFILE_TABS.map(tab => (
               <button
                 key={tab.key}
                 className={`profile-tab ${activeTab === tab.key ? 'active' : ''}`}
@@ -351,6 +417,197 @@ const Profile = () => {
                         >
                           <span className="material-icons-round">close</span>
                         </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* ── Track Order Tab ───────────────────────────────────────── */}
+            {activeTab === 'track' && (
+              <motion.div
+                className="profile-section"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                key="track"
+              >
+                <h2 className="profile-section__title">
+                  <span className="material-icons-round">local_shipping</span>
+                  Track My Order
+                </h2>
+
+                {ordersLoading ? (
+                  <div className="profile-empty">
+                    <div className="spinner spinner-sm" />
+                    <h3>Loading order tracking...</h3>
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="profile-empty">
+                    <span className="material-icons-round">local_shipping</span>
+                    <h3>No orders to track</h3>
+                    <p>Place an order first and you will be able to follow its progress here.</p>
+                    <Link to="/products" className="btn btn-primary">Browse Products</Link>
+                  </div>
+                ) : (
+                  <div className="track-order">
+                    <div className="track-order__selector">
+                      <label className="form-label">Select an order</label>
+                      <select
+                        className="form-input"
+                        value={selectedTrackOrder ? selectedTrackOrder.id : ''}
+                        onChange={(e) => setSelectedOrderId(e.target.value)}
+                      >
+                        {orders.map(order => (
+                          <option key={order.id} value={order.id}>
+                            {order.order_number} - {new Date(order.created_at).toLocaleDateString()}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {selectedTrackOrder && (
+                      <>
+                        <div className="track-order__summary">
+                          <div>
+                            <span className="track-order__label">Order Number</span>
+                            <strong>{selectedTrackOrder.order_number}</strong>
+                          </div>
+                          <div>
+                            <span className="track-order__label">Placed On</span>
+                            <strong>{formatTrackingDate(selectedTrackOrder.created_at)}</strong>
+                          </div>
+                          <div>
+                            <span className="track-order__label">Payment Status</span>
+                            <strong className={`track-order__payment track-order__payment--${selectedTrackOrder.payment_status}`}>
+                              {selectedTrackOrder.payment_status}
+                            </strong>
+                          </div>
+                          <div>
+                            <span className="track-order__label">Total</span>
+                            <strong>${parseFloat(selectedTrackOrder.total).toFixed(2)}</strong>
+                          </div>
+                        </div>
+
+                        <div className="track-order__status-row">
+                          <span className={`order-status order-status--${selectedTrackOrder.status}`}>
+                            {selectedTrackOrder.status}
+                          </span>
+                          <p className="track-order__status-copy">
+                            {selectedTrackOrder.status === 'delivered'
+                              ? 'Your order has been delivered.'
+                              : `Your order is currently ${selectedTrackOrder.status}.`}
+                          </p>
+                        </div>
+
+                        <div className="track-order__timeline">
+                          {ORDER_TRACKING_STEPS.map((step, index) => {
+                            const isComplete = index <= selectedOrderStep;
+                            const isCurrent = index === selectedOrderStep;
+
+                            return (
+                              <div
+                                key={step.key}
+                                className={`track-order__step ${isComplete ? 'is-complete' : ''} ${isCurrent ? 'is-current' : ''}`}
+                              >
+                                <span className="track-order__step-dot">
+                                  <span className="material-icons-round">
+                                    {isComplete ? 'check' : 'radio_button_unchecked'}
+                                  </span>
+                                </span>
+                                <div>
+                                  <strong>{step.label}</strong>
+                                  <p>
+                                    {index === 0 && 'We have received your order.'}
+                                    {index === 1 && 'Your order has been confirmed.'}
+                                    {index === 2 && 'We are preparing your package.'}
+                                    {index === 3 && 'Your order is on the way.'}
+                                    {index === 4 && 'Your order has arrived.'}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="track-order__details">
+                          <div>
+                            <span className="track-order__label">Items</span>
+                            <strong>{selectedTrackOrder.item_count}</strong>
+                          </div>
+                          <div>
+                            <span className="track-order__label">Payment Method</span>
+                            <strong style={{ textTransform: 'capitalize' }}>{selectedTrackOrder.payment_method}</strong>
+                          </div>
+                          <div>
+                            <span className="track-order__label">Next Step</span>
+                            <strong>
+                              {selectedTrackOrder.status === 'delivered'
+                                ? 'Completed'
+                                : ORDER_TRACKING_STEPS[Math.min(selectedOrderStep + 1, ORDER_TRACKING_STEPS.length - 1)]?.label || 'Pending'}
+                            </strong>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* ── Orders Tab ──────────────────────────────────────────────── */}
+            {activeTab === 'orders' && (
+              <motion.div
+                className="profile-section"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                key="orders"
+              >
+                <h2 className="profile-section__title">
+                  <span className="material-icons-round">receipt_long</span>
+                  My Orders
+                  {orders.length > 0 && (
+                    <span className="profile-section__count">{orders.length} orders</span>
+                  )}
+                </h2>
+
+                {ordersLoading ? (
+                  <div className="profile-empty">
+                    <div className="spinner spinner-sm" />
+                    <h3>Loading orders...</h3>
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="profile-empty">
+                    <span className="material-icons-round">receipt_long</span>
+                    <h3>No orders yet</h3>
+                    <p>Your order history will appear here after you place your first order.</p>
+                    <Link to="/products" className="btn btn-primary">Browse Products</Link>
+                  </div>
+                ) : (
+                  <div className="orders-list">
+                    {orders.map(order => (
+                      <div key={order.id} className="order-card">
+                        <div className="order-card__top">
+                          <div>
+                            <span className="order-card__number">{order.order_number}</span>
+                            <p className="order-card__meta">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
+                          </div>
+                          <span className={`order-status order-status--${order.status}`}>{order.status}</span>
+                        </div>
+                        <div className="order-card__grid">
+                          <div>
+                            <span className="order-card__label">Items</span>
+                            <strong>{order.item_count}</strong>
+                          </div>
+                          <div>
+                            <span className="order-card__label">Payment</span>
+                            <strong style={{ textTransform: 'capitalize' }}>{order.payment_method}</strong>
+                          </div>
+                          <div>
+                            <span className="order-card__label">Total</span>
+                            <strong>${parseFloat(order.total).toFixed(2)}</strong>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

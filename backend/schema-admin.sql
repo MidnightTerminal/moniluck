@@ -73,6 +73,36 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- ============================================================
 -- SITE SETTINGS TABLE
 -- ============================================================
+-- ============================================================
+-- REVIEWS TABLE
+-- ============================================================
+CREATE TABLE IF NOT EXISTS reviews (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  product_id  INT UNSIGNED NOT NULL,
+  user_id     INT UNSIGNED NOT NULL,
+  rating      TINYINT      NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  title       VARCHAR(255) DEFAULT NULL,
+  body        TEXT         DEFAULT NULL,
+  is_approved TINYINT(1)   NOT NULL DEFAULT 0,
+  admin_reply TEXT         DEFAULT NULL,
+  admin_reply_at DATETIME  DEFAULT NULL,
+  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_user_product (user_id, product_id),
+  INDEX idx_product_id (product_id),
+  INDEX idx_user_id    (user_id),
+  CONSTRAINT fk_review_product
+    FOREIGN KEY (product_id) REFERENCES products(id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_review_user
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- SITE SETTINGS TABLE
+-- ============================================================
 CREATE TABLE IF NOT EXISTS site_settings (
   id          INT UNSIGNED   NOT NULL AUTO_INCREMENT,
   setting_key VARCHAR(100)   NOT NULL UNIQUE,

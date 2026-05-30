@@ -6,6 +6,7 @@ const {
   register,
   login,
   getMe,
+  getMyOrders,
   updateProfile,
   changePassword,
   forgotPassword,
@@ -63,6 +64,7 @@ router.post('/register', registerValidation, validate, register);
 router.post('/login',    loginValidation,    validate, login);
 
 router.get('/me',         protect, getMe);
+router.get('/orders',     protect, getMyOrders);
 router.put('/profile',    protect, updateProfile);
 router.put('/password',   protect, changePassword);
 

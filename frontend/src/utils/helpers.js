@@ -146,3 +146,25 @@ export const getInitials = (firstName, lastName) => {
 export const cn = (...classes) => {
   return classes.filter(Boolean).join(' ');
 };
+
+/**
+ * Resolve asset path to backend shared images origin.
+ */
+export const resolveAssetUrl = (assetPath) => {
+  if (!assetPath) return '';
+  if (/^https?:\/\//i.test(assetPath)) return assetPath;
+
+  const normalized = assetPath.startsWith('/') ? assetPath : `/${assetPath}`;
+  const apiBase = process.env.REACT_APP_API_URL || '';
+
+  if (/^https?:\/\//i.test(apiBase)) {
+    try {
+      const origin = new URL(apiBase).origin;
+      return `${origin}${normalized}`;
+    } catch (error) {
+      // Ignore invalid URL and fallback below.
+    }
+  }
+
+  return `${window.location.protocol}//${window.location.hostname}:5000${normalized}`;
+};

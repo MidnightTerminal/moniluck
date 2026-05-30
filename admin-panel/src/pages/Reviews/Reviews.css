@@ -50,6 +50,44 @@
   line-height: 1.6; margin-bottom: 14px;
 }
 
+.review-admin-card__reply {
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: var(--admin-radius-md);
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border-light);
+}
+
+.review-admin-card__reply-input {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.review-admin-card__reply-preview {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--admin-radius-md);
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+}
+
+.review-admin-card__reply-label {
+  display: inline-flex;
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admin-primary);
+}
+
+.review-admin-card__reply-preview p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: var(--admin-text-secondary);
+}
+
 .review-admin-card__footer {
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 12px; border-top: 1px solid var(--admin-border-light);

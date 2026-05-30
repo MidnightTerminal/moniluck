@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
+import { resolveAssetUrl } from '../../utils/helpers';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
   const { addToCart, isInCart, toggleWishlist, isInWishlist } = useCart();
+  const productImage = product?.thumbnail || '';
 
   const discount = product.compare_price && product.compare_price > product.price
     ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
@@ -31,9 +33,18 @@ const ProductCard = ({ product }) => {
       {/* Image Section */}
       <div className="product-card__image-wrapper">
         <Link to={`/products/${product.slug}`} className="product-card__image-link">
-          <div className="product-card__image-placeholder">
-            <span className="material-icons-round">shopping_bag</span>
-          </div>
+          {productImage ? (
+            <img
+              src={resolveAssetUrl(productImage)}
+              alt={product.name}
+              className="product-card__image"
+              loading="lazy"
+            />
+          ) : (
+            <div className="product-card__image-placeholder">
+              <span className="material-icons-round">shopping_bag</span>
+            </div>
+          )}
         </Link>
 
         {/* Badges */}

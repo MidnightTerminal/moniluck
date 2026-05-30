@@ -129,6 +129,28 @@ exports.getMe = async (req, res, next) => {
   }
 };
 
+// ─── GET MY ORDERS ───────────────────────────────────────────────────────────
+exports.getMyOrders = async (req, res, next) => {
+  try {
+    const orders = await query(
+      `SELECT
+         o.id, o.order_number, o.status, o.payment_status, o.payment_method,
+         o.subtotal, o.shipping_cost, o.discount, o.total, o.currency,
+         o.created_at,
+         (SELECT COUNT(*) FROM order_items oi WHERE oi.order_id = o.id) AS item_count
+       FROM orders o
+       WHERE o.user_id = ?
+       ORDER BY o.created_at DESC
+       LIMIT 50`,
+      [req.user.id]
+    );
+
+    res.status(200).json({ success: true, orders });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ─── UPDATE PROFILE ───────────────────────────────────────────────────────────
 exports.updateProfile = async (req, res, next) => {
   try {

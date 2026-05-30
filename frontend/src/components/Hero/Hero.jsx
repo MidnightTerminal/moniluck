@@ -1,95 +1,100 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { resolveAssetUrl } from '../../utils/helpers';
 import './Hero.css';
 
 const slides = [
   {
     id      : 1,
-    tag     : '✨ New Collection',
+    tag     : 'New Collection',
     title   : ['Transform Your', 'Home Into a', 'Sanctuary'],
     subtitle: 'Premium home care products crafted to keep every corner of your living space spotlessly clean, beautifully fresh, and hygienically safe.',
     cta     : { label: 'Shop Home Care', link: '/category/home-care' },
     cta2    : { label: 'Explore All', link: '/products' },
     category: 'home-care',
+    image   : '/images/hero/home-care.jpg',
     accent  : '#667eea',
     accent2 : '#764ba2',
-    badge   : { label: 'Best Seller', icon: '🏆' },
+    badge   : { label: 'Best Seller', icon: 'workspace_premium' },
     stats   : [
       { value: '500+', label: 'Products' },
       { value: '50K+', label: 'Happy Customers' },
       { value: '4.8★', label: 'Avg Rating' },
     ],
     floatingCards: [
-      { icon: '🧹', text: 'Deep Clean', color: '#667eea' },
-      { icon: '🌿', text: 'Eco Friendly', color: '#10b981' },
-      { icon: '💧', text: 'Fresh Scent', color: '#06b6d4' },
+      { icon: 'cleaning_services', text: 'Deep Clean', color: '#667eea' },
+      { icon: 'eco', text: 'Eco Friendly', color: '#10b981' },
+      { icon: 'water_drop', text: 'Fresh Scent', color: '#06b6d4' },
     ],
   },
   {
     id      : 2,
-    tag     : '🍳 Kitchen Essentials',
+    tag     : 'Kitchen Essentials',
     title   : ['Keep Your Kitchen', 'Sparkling Clean', '& Organized'],
     subtitle: 'Discover our powerful kitchen care range — from ultra-concentrated dish gels to heavy-duty degreasers that cut through the toughest grease.',
     cta     : { label: 'Shop Kitchen Care', link: '/category/kitchen-care' },
     cta2    : { label: 'View Deals', link: '/products?featured=true' },
     category: 'kitchen-care',
+    image   : '/images/hero/kitchen-care.jpg',
     accent  : '#f093fb',
     accent2 : '#f5576c',
-    badge   : { label: 'Top Rated', icon: '⭐' },
+    badge   : { label: 'Top Rated', icon: 'star' },
     stats   : [
       { value: '100+', label: 'Kitchen Products' },
       { value: '99.9%', label: 'Germ Kill Rate' },
       { value: '30min', label: 'Free Delivery' },
     ],
     floatingCards: [
-      { icon: '✨', text: 'Streak Free', color: '#f093fb' },
-      { icon: '💪', text: 'Ultra Power', color: '#f5576c' },
-      { icon: '🛡️', text: 'Safe Formula', color: '#667eea' },
+      { icon: 'auto_awesome', text: 'Streak Free', color: '#f093fb' },
+      { icon: 'bolt', text: 'Ultra Power', color: '#f5576c' },
+      { icon: 'verified_user', text: 'Safe Formula', color: '#667eea' },
     ],
   },
   {
     id      : 3,
-    tag     : '🌸 Personal Care',
+    tag     : 'Personal Care',
     title   : ['Nourish Your Skin,', 'Elevate Your', 'Daily Routine'],
     subtitle: 'Luxury personal care formulated with premium natural ingredients. Hydrate, protect, and pamper your skin with our scientifically crafted range.',
     cta     : { label: 'Shop Personal Care', link: '/category/personal-care' },
     cta2    : { label: 'Discover More', link: '/products' },
     category: 'personal-care',
+    image   : '/images/hero/personal-care.jpg',
     accent  : '#fa709a',
     accent2 : '#fee140',
-    badge   : { label: 'New Arrivals', icon: '🆕' },
+    badge   : { label: 'New Arrivals', icon: 'new_releases' },
     stats   : [
       { value: '200+', label: 'Skin Products' },
       { value: '100%', label: 'Natural Extracts' },
       { value: '0%', label: 'Harsh Chemicals' },
     ],
     floatingCards: [
-      { icon: '🌺', text: 'Natural', color: '#fa709a' },
-      { icon: '💦', text: 'Hydrating', color: '#06b6d4' },
-      { icon: '🌙', text: 'Gentle Care', color: '#764ba2' },
+      { icon: 'spa', text: 'Natural', color: '#fa709a' },
+      { icon: 'opacity', text: 'Hydrating', color: '#06b6d4' },
+      { icon: 'nightlight', text: 'Gentle Care', color: '#764ba2' },
     ],
   },
   {
     id      : 4,
-    tag     : '👗 Clothing Care',
+    tag     : 'Clothing Care',
     title   : ['Keep Every Fabric', 'Fresh, Soft &', 'Vibrant'],
     subtitle: 'Professional-grade laundry solutions that protect colors, remove stubborn stains, and leave your clothes irresistibly soft with long-lasting fragrance.',
     cta     : { label: 'Shop Clothing Care', link: '/category/clothing-care' },
     cta2    : { label: 'All Products', link: '/products' },
     category: 'clothing-care',
+    image   : '/images/hero/clothing-care.jpg',
     accent  : '#4facfe',
     accent2 : '#00f2fe',
-    badge   : { label: 'Fan Favorite', icon: '❤️' },
+    badge   : { label: 'Fan Favorite', icon: 'favorite' },
     stats   : [
       { value: '80+', label: 'Fabric Products' },
       { value: '48hr', label: 'Fresh Guarantee' },
       { value: '∞', label: 'Washes Protected' },
     ],
     floatingCards: [
-      { icon: '🧺', text: 'Fabric Safe', color: '#4facfe' },
-      { icon: '🌸', text: 'Long Lasting', color: '#fa709a' },
-      { icon: '💎', text: 'Color Guard', color: '#667eea' },
+      { icon: 'checkroom', text: 'Fabric Safe', color: '#4facfe' },
+      { icon: 'air', text: 'Long Lasting', color: '#fa709a' },
+      { icon: 'palette', text: 'Color Guard', color: '#667eea' },
     ],
   },
 ];
@@ -304,17 +309,11 @@ const Hero = () => {
                       background: `linear-gradient(135deg, ${slide.accent}20, ${slide.accent2}20)`,
                     }}
                   >
-                    <div
-                      className="hero__product-icon"
-                      style={{
-                        background: `linear-gradient(135deg, ${slide.accent}, ${slide.accent2})`,
-                      }}
-                    >
-                      {slide.id === 1 && <span>🏠</span>}
-                      {slide.id === 2 && <span>🍳</span>}
-                      {slide.id === 3 && <span>🌸</span>}
-                      {slide.id === 4 && <span>👗</span>}
-                    </div>
+                    <img
+                      src={resolveAssetUrl(slide.image)}
+                      alt={`${slide.category} collection`}
+                      className="hero__product-image"
+                    />
                   </div>
 
                   {/* Badge */}
@@ -326,7 +325,7 @@ const Hero = () => {
                       background: `linear-gradient(135deg, ${slide.accent}, ${slide.accent2})`,
                     }}
                   >
-                    <span>{slide.badge.icon}</span>
+                    <span className="material-icons-round hero__badge-icon">{slide.badge.icon}</span>
                     <span>{slide.badge.label}</span>
                   </motion.div>
 
@@ -368,7 +367,7 @@ const Hero = () => {
                     className="hero__floating-icon"
                     style={{ background: `${card.color}15` }}
                   >
-                    {card.icon}
+                    <span className="material-icons-round">{card.icon}</span>
                   </div>
                   <span style={{ color: card.color }}>{card.text}</span>
                 </motion.div>

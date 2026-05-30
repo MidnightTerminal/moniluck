@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useParams, Link } from 'react-router-dom';
+import { useSearchParams, useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchProducts, fetchCategories, fetchProductsByCategory } from '../../utils/api';
 import ProductCard from '../../components/ProductCard/ProductCard';
@@ -15,6 +15,7 @@ const Products = () => {
   const [totalProducts, setTotal]     = useState(0);
   const [totalPages, setTotalPages]   = useState(0);
   const [currentCategory, setCurrentCategory] = useState(null);
+  const navigate = useNavigate();
 
   /* ─── Filters ────────────────────────────────────────────────────────────── */
   const [filters, setFilters] = useState({
@@ -118,6 +119,11 @@ const Products = () => {
   };
 
   const clearFilters = () => {
+    if (categorySlug) {
+      navigate('/products');
+      return;
+    }
+
     setFilters({
       page: 1, sort: 'created_at', order: 'DESC',
       search: '', min_price: '', max_price: '',
@@ -126,7 +132,7 @@ const Products = () => {
   };
 
   const hasActiveFilters = filters.search || filters.min_price || filters.max_price
-    || filters.featured || (filters.category && !categorySlug);
+    || filters.featured || categorySlug || (filters.category && !categorySlug);
 
   const sortOptions = [
     { value: 'created_at-DESC', label: 'Newest First' },
@@ -259,7 +265,22 @@ const Products = () => {
             </h1>
 
             {currentCategory && currentCategory.description && (
-              <p className="products-hero__subtitle">{currentCategory.description}</p>
+              <p className="products-hero__subtitle products-hero__subtitle--with-action">
+                <span>{currentCategory.description}</span>
+                <button className="products-hero__clear-link" onClick={clearFilters}>
+                  <span className="material-icons-round">filter_list_off</span>
+                  Clear Category Filter
+                </button>
+              </p>
+            )}
+
+            {categorySlug && !currentCategory?.description && (
+              <div className="products-hero__actions">
+                <button className="products-hero__clear-link" onClick={clearFilters}>
+                  <span className="material-icons-round">filter_list_off</span>
+                  Clear Category Filter
+                </button>
+              </div>
             )}
           </motion.div>
         </div>

@@ -3,9 +3,10 @@ const cors         = require('cors');
 const helmet       = require('helmet');
 const morgan       = require('morgan');
 const rateLimit    = require('express-rate-limit');
+const path         = require('path');
 require('dotenv').config();
 
-const { testConnection }           = require('./config/db');
+const { testConnection, query }    = require('./config/db');
 const { notFound, errorHandler }   = require('./middleware/errorHandler');
 
 // ─── Route Imports ────────────────────────────────────────────────────────────
@@ -61,7 +62,27 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // ─── Static Files ─────────────────────────────────────────────────────────────
-app.use('/images', express.static('public/images'));
+const sharedImagesDir = path.resolve(__dirname, '../shared/images');
+app.use('/images', express.static(sharedImagesDir));
+
+const ensureReviewReplyColumns = async () => {
+  const columns = await query(
+    `SELECT COLUMN_NAME
+     FROM INFORMATION_SCHEMA.COLUMNS
+     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'reviews'`,
+    [process.env.DB_NAME || 'moniluck_db']
+  );
+
+  const columnNames = new Set(columns.map(column => column.COLUMN_NAME));
+
+  if (!columnNames.has('admin_reply')) {
+    await query('ALTER TABLE reviews ADD COLUMN admin_reply TEXT DEFAULT NULL');
+  }
+
+  if (!columnNames.has('admin_reply_at')) {
+    await query('ALTER TABLE reviews ADD COLUMN admin_reply_at DATETIME DEFAULT NULL');
+  }
+};
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -87,6 +108,7 @@ app.use(errorHandler);
 // ─── Start Server ─────────────────────────────────────────────────────────────
 const startServer = async () => {
   await testConnection();
+  await ensureReviewReplyColumns();
   app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════╗

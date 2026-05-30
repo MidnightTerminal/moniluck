@@ -1,14 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getAdminProduct, createProduct, updateProduct, getAdminCategories } from '../../utils/adminApi';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { getAdminProduct, createProduct, updateProduct, getAdminCategories, uploadAdminProductImage } from '../../utils/adminApi';
 import toast from 'react-hot-toast';
+import './ProductForm.css';
 
 const emptyForm = {
   name: '', slug: '', category_id: '', description: '', short_desc: '',
   price: '', compare_price: '', sku: '', stock: '0', thumbnail: '',
   brand: '', is_featured: false, is_active: true,
 };
+
+const getPreviewUrl = (imagePath) => {
+  if (!imagePath) return '';
+  if (/^https?:\/\//i.test(imagePath)) return imagePath;
+
+  const normalized = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+  const apiBase = process.env.REACT_APP_API_URL || '';
+
+  if (/^https?:\/\//i.test(apiBase)) {
+    try {
+      const origin = new URL(apiBase).origin;
+      return `${origin}${normalized}`;
+    } catch (error) {
+      // Ignore invalid URL and fallback below.
+    }
+  }
+
+  return `${window.location.protocol}//${window.location.hostname}:5000${normalized}`;
+};
+
+const descriptionEditorModules = {
+  toolbar: {
+    container: [
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ color: [] }, { background: [] }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ align: [] }],
+      ['blockquote', 'code-block'],
+      ['link', 'clean'],
+    ],
+  },
+  clipboard: { matchVisual: false },
+};
+
+const descriptionEditorFormats = [
+  'header',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'color',
+  'background',
+  'list',
+  'bullet',
+  'align',
+  'blockquote',
+  'code-block',
+  'link',
+];
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -18,6 +71,7 @@ const ProductForm = () => {
   const [form, setForm]           = useState(emptyForm);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading]     = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [fetching, setFetching]   = useState(isEdit);
   const [errors, setErrors]       = useState({});
 
@@ -59,6 +113,11 @@ const ProductForm = () => {
     if (errors[name]) setErrors(p => ({ ...p, [name]: '' }));
   };
 
+  const handleDescriptionChange = (value) => {
+    setForm(prev => ({ ...prev, description: value }));
+    if (errors.description) setErrors(prev => ({ ...prev, description: '' }));
+  };
+
   const validate = () => {
     const e = {};
     if (!form.name.trim())        e.name        = 'Name is required.';
@@ -66,6 +125,7 @@ const ProductForm = () => {
     if (!form.category_id)        e.category_id = 'Category is required.';
     if (!form.price || form.price <= 0) e.price = 'Valid price is required.';
     if (!form.sku.trim())         e.sku         = 'SKU is required.';
+    if (!form.thumbnail.trim())   e.thumbnail   = 'Image path is required.';
     setErrors(e);
     return !Object.keys(e).length;
   };
@@ -92,6 +152,26 @@ const ProductForm = () => {
     } catch (err) {
       toast.error(err.response?.data?.message || 'Operation failed.');
     } finally { setLoading(false); }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const res = await uploadAdminProductImage(file);
+      if (res.data?.success) {
+        setForm(prev => ({ ...prev, thumbnail: res.data.imagePath }));
+        setErrors(prev => ({ ...prev, thumbnail: '' }));
+        toast.success('Image uploaded.');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Image upload failed.');
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
+    }
   };
 
   if (fetching) return <div className="admin-loading-page"><div className="admin-spinner" /></div>;
@@ -143,9 +223,20 @@ const ProductForm = () => {
 
               <div className="admin-form-group">
                 <label className="admin-label">Full Description</label>
-                <textarea className="admin-input admin-textarea" name="description"
-                  value={form.description} onChange={handleChange} rows="5"
-                  placeholder="Detailed product description..." />
+                <p className="admin-help-text">
+                  Use formatting, links, bullets, and headings to create a rich product story.
+                </p>
+                <div className={`admin-rich-editor ${errors.description ? 'error' : ''}`}>
+                  <ReactQuill
+                    theme="snow"
+                    value={form.description}
+                    onChange={handleDescriptionChange}
+                    modules={descriptionEditorModules}
+                    formats={descriptionEditorFormats}
+                    placeholder="Detailed product description..."
+                  />
+                </div>
+                {errors.description && <span className="admin-form-error">{errors.description}</span>}
               </div>
             </div>
 
@@ -193,8 +284,34 @@ const ProductForm = () => {
               </div>
               <div className="admin-form-group">
                 <label className="admin-label">Thumbnail URL</label>
-                <input className="admin-input" name="thumbnail" value={form.thumbnail}
+                <input className={`admin-input ${errors.thumbnail ? 'error' : ''}`} name="thumbnail" value={form.thumbnail}
                   onChange={handleChange} placeholder="/images/products/..." />
+                {errors.thumbnail && <span className="admin-form-error">{errors.thumbnail}</span>}
+                <div style={{ marginTop: 10 }}>
+                  <label className="admin-label" style={{ fontSize: '0.8rem', color: 'var(--admin-text-secondary)' }}>Upload Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="admin-input"
+                    disabled={uploadingImage}
+                    style={{ marginTop: 6 }}
+                  />
+                  {uploadingImage && (
+                    <span style={{ display: 'inline-block', marginTop: 8, fontSize: '0.8rem', color: 'var(--admin-text-light)' }}>
+                      Uploading image...
+                    </span>
+                  )}
+                </div>
+                {form.thumbnail && (
+                  <div style={{ marginTop: 12 }}>
+                    <img
+                      src={getPreviewUrl(form.thumbnail)}
+                      alt="Product preview"
+                      style={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--admin-border)' }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

@@ -1,16 +1,6 @@
-const nodemailer   = require('nodemailer');
 const { query }    = require('../config/db');
 const { AppError } = require('../middleware/errorHandler');
-
-const transporter = nodemailer.createTransport({
-  host  : process.env.EMAIL_HOST,
-  port  : parseInt(process.env.EMAIL_PORT),
-  secure: false,
-  auth  : {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const { sendEmail, sendTelegramMessage } = require('../utils/notificationService');
 
 // ─── SEND CONTACT MESSAGE ─────────────────────────────────────────────────────
 exports.sendContactMessage = async (req, res, next) => {
@@ -62,12 +52,20 @@ exports.sendContactMessage = async (req, res, next) => {
       `,
     };
 
-    try {
-      await transporter.sendMail(adminMail);
-      await transporter.sendMail(userMail);
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError.message);
-    }
+    const telegramMessage = [
+      'New contact message received',
+      `Name: ${name}`,
+      `Email: ${email}`,
+      phone ? `Phone: ${phone}` : null,
+      `Subject: ${subject}`,
+      `Message: ${message}`,
+    ].filter(Boolean).join('\n');
+
+    await Promise.allSettled([
+      sendEmail(adminMail),
+      sendEmail(userMail),
+      sendTelegramMessage(telegramMessage),
+    ]);
 
     // Newsletter subscription
     const { subscribe_newsletter } = req.body;

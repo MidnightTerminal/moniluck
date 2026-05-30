@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { placeOrder as submitOrder } from '../../utils/api';
 import toast from 'react-hot-toast';
 import './Checkout.css';
 
@@ -122,19 +123,45 @@ const Checkout = () => {
 
   const placeOrder = async () => {
     if (!validateStep(currentStep)) return;
+    if (!isAuthenticated) {
+      toast.error('Please log in to place your order.');
+      navigate('/login');
+      return;
+    }
 
     setLoading(true);
 
-    // Simulate order placement
-    await new Promise(res => setTimeout(res, 2000));
+    try {
+      const payload = {
+        items: cartItems.map(item => ({ product_id: item.id, quantity: item.quantity })),
+        email: formData.email,
+        phone: formData.phone,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        address: formData.address,
+        address2: formData.address2,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: formData.country,
+        shipping_method: formData.shipping_method,
+        payment_method: formData.payment_method,
+        notes: formData.notes,
+      };
 
-    const generatedOrderId = 'ML-' + Date.now().toString().slice(-8);
-    setOrderId(generatedOrderId);
-    setOrderPlaced(true);
-    setCurrentStep(3);
-    clearCart();
-    toast.success('Order placed successfully! 🎉');
-    setLoading(false);
+      const { data } = await submitOrder(payload);
+      if (data.success) {
+        setOrderId(data.order.order_number);
+        setOrderPlaced(true);
+        setCurrentStep(3);
+        clearCart();
+        toast.success('Order placed successfully! 🎉');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to place order.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ─── Format Card Number ─────────────────────────────────────────────── */

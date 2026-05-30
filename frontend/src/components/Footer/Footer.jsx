@@ -1,7 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
+import { CONTACT_INFO, SOCIAL_LINKS, FOOTER_LINKS } from '../../utils/constants';
 import './Footer.css';
+
+const SOCIAL_ICONS = {
+  facebook : FaFacebookF,
+  instagram: FaInstagram,
+  twitter  : FaXTwitter,
+  youtube  : FaYoutube,
+};
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -21,18 +31,23 @@ const Footer = () => {
                 Premium care products for every corner of your life. From home to personal care — we've got you covered.
               </p>
               <div className="footer__socials">
-                {['facebook', 'instagram', 'twitter', 'youtube'].map(social => (
+                {SOCIAL_LINKS.map(({ platform, url, label }) => {
+                  const Icon = SOCIAL_ICONS[platform];
+
+                  return (
                   <motion.a
-                    key={social}
-                    href="#"
+                    key={platform}
+                    href={url}
                     className="footer__social-link"
                     whileHover={{ y: -3, scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    aria-label={social}
+                    aria-label={platform}
+                    onClick={url === '#' ? (event) => event.preventDefault() : undefined}
                   >
-                    <span className="footer__social-icon">{social.charAt(0).toUpperCase()}</span>
+                    {Icon ? <Icon className="footer__social-icon" /> : <span className="footer__social-icon">{label}</span>}
                   </motion.a>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -40,11 +55,9 @@ const Footer = () => {
             <div className="footer__column">
               <h4 className="footer__col-title">Quick Links</h4>
               <nav className="footer__nav">
-                <Link to="/">Home</Link>
-                <Link to="/about">About Us</Link>
-                <Link to="/products">Shop</Link>
-                <Link to="/media">Media</Link>
-                <Link to="/contact">Contact</Link>
+                {FOOTER_LINKS.quickLinks.map(link => (
+                  <Link key={link.to} to={link.to}>{link.label}</Link>
+                ))}
               </nav>
             </div>
 
@@ -52,11 +65,9 @@ const Footer = () => {
             <div className="footer__column">
               <h4 className="footer__col-title">Categories</h4>
               <nav className="footer__nav">
-                <Link to="/category/home-care">Home Care</Link>
-                <Link to="/category/kitchen-care">Kitchen Care</Link>
-                <Link to="/category/personal-care">Personal Care</Link>
-                <Link to="/category/clothing-care">Clothing Care</Link>
-                <Link to="/category/toilet-care">Toilet Care</Link>
+                {FOOTER_LINKS.categories.map(link => (
+                  <Link key={link.to} to={link.to}>{link.label}</Link>
+                ))}
               </nav>
             </div>
 
@@ -66,19 +77,19 @@ const Footer = () => {
               <div className="footer__contact-list">
                 <div className="footer__contact-item">
                   <span className="material-icons-round">location_on</span>
-                  <span>123 Care Street, City, Country</span>
+                  <span>{CONTACT_INFO.address}</span>
                 </div>
                 <div className="footer__contact-item">
                   <span className="material-icons-round">email</span>
-                  <a href="mailto:info@moniluck.com">info@moniluck.com</a>
+                  <a href={`mailto:${CONTACT_INFO.email}`}>{CONTACT_INFO.email}</a>
                 </div>
                 <div className="footer__contact-item">
                   <span className="material-icons-round">phone</span>
-                  <a href="tel:+1234567890">+1 (234) 567-890</a>
+                  <a href="tel:+1234567890">{CONTACT_INFO.phone}</a>
                 </div>
                 <div className="footer__contact-item">
                   <span className="material-icons-round">schedule</span>
-                  <span>Mon – Sat: 9AM – 7PM</span>
+                  <span>{CONTACT_INFO.hours}</span>
                 </div>
               </div>
             </div>

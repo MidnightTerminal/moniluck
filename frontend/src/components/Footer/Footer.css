@@ -74,7 +74,18 @@
   color: var(--white);
 }
 
-.footer__social-icon { font-size: 0.9rem; font-weight: 700; }
+.footer__social-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.footer__social-link svg {
+  width: 16px;
+  height: 16px;
+}
 
 /* ─── Columns ────────────────────────────────────────────────────────────── */
 .footer__col-title {

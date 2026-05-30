@@ -291,6 +291,11 @@ exports.addReview = async (req, res, next) => {
   try {
     const { slug }  = req.params;
     const { rating, title, body } = req.body;
+    const safeRating = parseInt(rating, 10);
+
+    if (!Number.isInteger(safeRating) || safeRating < 1 || safeRating > 5) {
+      return next(new AppError('Rating must be between 1 and 5.', 400));
+    }
 
     const products = await query(
       'SELECT id FROM products WHERE slug = ? AND is_active = 1',
@@ -309,7 +314,7 @@ exports.addReview = async (req, res, next) => {
 
     await query(
       'INSERT INTO reviews (product_id, user_id, rating, title, body) VALUES (?, ?, ?, ?, ?)',
-      [product.id, req.user.id, parseInt(rating), title || null, body || null]
+      [product.id, req.user.id, safeRating, title?.trim() || null, body?.trim() || null]
     );
 
     // Update product rating

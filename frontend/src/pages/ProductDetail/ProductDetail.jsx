@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import { fetchProduct } from '../../utils/api';
+import { addProductReview } from '../../utils/api';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../../components/ProductCard/ProductCard';
+import { resolveAssetUrl } from '../../utils/helpers';
+import toast from 'react-hot-toast';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
   const { slug } = useParams();
   const { addToCart, isInCart, getCartItem, updateQuantity, toggleWishlist, isInWishlist } = useCart();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   const [product, setProduct]   = useState(null);
   const [related, setRelated]   = useState([]);
@@ -17,6 +23,8 @@ const ProductDetail = () => {
   const [error, setError]       = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [reviewForm, setReviewForm] = useState({ rating: '', title: '', body: '' });
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -87,6 +95,8 @@ const ProductDetail = () => {
 
   const inCart     = isInCart(product.id);
   const wishlisted = isInWishlist(product.id);
+  const detailImage = product?.thumbnail || (Array.isArray(product?.images) ? product.images[0] : '');
+  const sanitizedDescription = product.description ? DOMPurify.sanitize(product.description) : '';
 
   const renderStars = (rating) => {
     const stars = [];
@@ -105,6 +115,44 @@ const ProductDetail = () => {
       updateQuantity(product.id, quantity);
     } else {
       addToCart(product, quantity);
+    }
+  };
+
+  const handleReviewSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!isAuthenticated) {
+      toast.error('Please log in to add a review.');
+      return;
+    }
+
+    const rating = parseInt(reviewForm.rating, 10);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      toast.error('Please choose a rating from 1 to 5.');
+      return;
+    }
+
+    if (!reviewForm.body.trim()) {
+      toast.error('Please write a review message.');
+      return;
+    }
+
+    setReviewSubmitting(true);
+    try {
+      const { data } = await addProductReview(slug, {
+        rating,
+        title: reviewForm.title.trim(),
+        body: reviewForm.body.trim(),
+      });
+
+      if (data.success) {
+        toast.success(data.message || 'Review submitted successfully.');
+        setReviewForm({ rating: '', title: '', body: '' });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit review.');
+    } finally {
+      setReviewSubmitting(false);
     }
   };
 
@@ -143,9 +191,17 @@ const ProductDetail = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="pd-image__main">
-              <div className="pd-image__placeholder">
-                <span className="material-icons-round">shopping_bag</span>
-              </div>
+              {detailImage ? (
+                <img
+                  src={resolveAssetUrl(detailImage)}
+                  alt={product.name}
+                  className="pd-image__img"
+                />
+              ) : (
+                <div className="pd-image__placeholder">
+                  <span className="material-icons-round">shopping_bag</span>
+                </div>
+              )}
 
               {/* Badges */}
               <div className="pd-image__badges">
@@ -304,7 +360,14 @@ const ProductDetail = () => {
                 animate={{ opacity: 1, y: 0 }}
                 key="description"
               >
-                <p>{product.description || product.short_desc || 'No description available.'}</p>
+                {sanitizedDescription ? (
+                  <div
+                    className="pd-rich-content"
+                    dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+                  />
+                ) : (
+                  <p>{product.short_desc || 'No description available.'}</p>
+                )}
               </motion.div>
             )}
 
@@ -315,6 +378,79 @@ const ProductDetail = () => {
                 animate={{ opacity: 1, y: 0 }}
                 key="reviews"
               >
+                <div className="pd-review-form-card">
+                  <div className="pd-review-form-card__header">
+                    <div>
+                      <h3>Write a Review</h3>
+                      <p>
+                        Share your experience with this product.
+                        {isAuthenticated ? ` Posting as ${user?.first_name || 'you'}.` : ' Please log in to submit a review.'}
+                      </p>
+                    </div>
+                    {!isAuthenticated && (
+                      <Link to="/login" className="btn btn-primary btn-sm">
+                        Log In
+                      </Link>
+                    )}
+                  </div>
+
+                  {isAuthenticated && (
+                    <form className="pd-review-form" onSubmit={handleReviewSubmit}>
+                      <div className="pd-review-form__rating">
+                        <label className="form-label">Rating *</label>
+                        <div className="pd-review-rating-options">
+                          {[5, 4, 3, 2, 1].map(value => (
+                            <button
+                              key={value}
+                              type="button"
+                              className={`pd-review-rating-btn ${parseInt(reviewForm.rating, 10) === value ? 'active' : ''}`}
+                              onClick={() => setReviewForm(prev => ({ ...prev, rating: String(value) }))}
+                            >
+                              {'★'.repeat(value)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pd-review-form__grid">
+                        <div className="form-group">
+                          <label className="form-label">Review Title</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={reviewForm.title}
+                            onChange={e => setReviewForm(prev => ({ ...prev, title: e.target.value }))}
+                            placeholder="Short summary of your experience"
+                          />
+                        </div>
+                        <div className="form-group pd-review-form__textarea-group">
+                          <label className="form-label">Review *</label>
+                          <textarea
+                            className="form-input pd-review-form__textarea"
+                            value={reviewForm.body}
+                            onChange={e => setReviewForm(prev => ({ ...prev, body: e.target.value }))}
+                            placeholder="Tell other customers what you liked or what could be improved..."
+                            rows="5"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pd-review-form__actions">
+                        <p className="pd-review-form__hint">
+                          Reviews are checked before publishing.
+                        </p>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          disabled={reviewSubmitting || authLoading}
+                        >
+                          {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+
                 {reviews.length === 0 ? (
                   <div className="pd-no-reviews">
                     <span className="material-icons-round">rate_review</span>
@@ -338,6 +474,12 @@ const ProductDetail = () => {
                         </div>
                         {review.title && <h5 className="pd-review__title">{review.title}</h5>}
                         {review.body && <p className="pd-review__body">{review.body}</p>}
+                        {review.admin_reply && (
+                          <div className="pd-review__reply">
+                            <span className="pd-review__reply-label">Admin Reply</span>
+                            <p>{review.admin_reply}</p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

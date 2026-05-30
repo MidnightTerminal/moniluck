@@ -1,10 +1,69 @@
 const bcrypt       = require('bcryptjs');
+const path         = require('path');
+const fs           = require('fs');
 const { query }    = require('../config/db');
 const { AppError } = require('../middleware/errorHandler');
 
 const toPositiveInt = (value, fallback) => {
   const parsed = parseInt(value, 10);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const normalizeImagePath = (value) => {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) {
+    return trimmed;
+  }
+  return `/${trimmed}`;
+};
+
+const normalizeImageList = (images) => {
+  if (Array.isArray(images)) {
+    return images.map(normalizeImagePath).filter(Boolean);
+  }
+
+  if (typeof images === 'string') {
+    const trimmed = images.trim();
+    if (!trimmed) return [];
+
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed.map(normalizeImagePath).filter(Boolean);
+      }
+    } catch (error) {
+      return trimmed.split(',').map(item => normalizeImagePath(item)).filter(Boolean);
+    }
+  }
+
+  return [];
+};
+
+exports.uploadProductImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return next(new AppError('Image file is required.', 400));
+    }
+
+    const sharedProductsDir = path.resolve(__dirname, '../../shared/images/products');
+    fs.mkdirSync(sharedProductsDir, { recursive: true });
+
+    const extension = path.extname(req.file.originalname || '').toLowerCase();
+    const safeExt = ['.jpg', '.jpeg', '.png', '.webp'].includes(extension) ? extension : '.jpg';
+    const filename = `product-${Date.now()}-${Math.floor(Math.random() * 100000)}${safeExt}`;
+    const outputPath = path.join(sharedProductsDir, filename);
+    fs.writeFileSync(outputPath, req.file.buffer);
+
+    res.status(201).json({
+      success: true,
+      message: 'Product image uploaded successfully.',
+      imagePath: `/images/products/${filename}`,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -184,6 +243,13 @@ exports.createProduct = async (req, res, next) => {
       return next(new AppError('Name, slug, price, SKU, and category are required.', 400));
     }
 
+    const normalizedImages = normalizeImageList(images);
+    const normalizedThumbnail = normalizeImagePath(thumbnail) || normalizedImages[0] || null;
+
+    if (!normalizedThumbnail) {
+      return next(new AppError('Product image path (thumbnail) is required.', 400));
+    }
+
     const result = await query(
       `INSERT INTO products
        (category_id, name, slug, description, short_desc, price, compare_price,
@@ -193,8 +259,8 @@ exports.createProduct = async (req, res, next) => {
         category_id, name.trim(), slug.trim().toLowerCase(),
         description || null, short_desc || null,
         parseFloat(price), compare_price ? parseFloat(compare_price) : null,
-        sku.trim(), parseInt(stock) || 0, thumbnail || null,
-        images ? JSON.stringify(images) : null,
+        sku.trim(), parseInt(stock) || 0, normalizedThumbnail,
+        normalizedImages.length ? JSON.stringify(normalizedImages) : null,
         brand || null,
         tags ? JSON.stringify(tags) : null,
         is_featured ? 1 : 0, is_active !== false ? 1 : 0
@@ -218,8 +284,15 @@ exports.updateProduct = async (req, res, next) => {
       is_featured, is_active
     } = req.body;
 
-    const [existing] = await query('SELECT id FROM products WHERE id = ?', [id]);
+    const [existing] = await query('SELECT id, thumbnail FROM products WHERE id = ?', [id]);
     if (!existing) return next(new AppError('Product not found.', 404));
+
+    const normalizedImages = normalizeImageList(images);
+    const normalizedThumbnail = normalizeImagePath(thumbnail) || normalizedImages[0] || existing.thumbnail || null;
+
+    if (!normalizedThumbnail) {
+      return next(new AppError('Product image path (thumbnail) is required.', 400));
+    }
 
     await query(
       `UPDATE products SET
@@ -231,8 +304,8 @@ exports.updateProduct = async (req, res, next) => {
         category_id, name.trim(), slug.trim().toLowerCase(),
         description || null, short_desc || null,
         parseFloat(price), compare_price ? parseFloat(compare_price) : null,
-        sku.trim(), parseInt(stock) || 0, thumbnail || null,
-        images ? JSON.stringify(images) : null,
+        sku.trim(), parseInt(stock) || 0, normalizedThumbnail,
+        normalizedImages.length ? JSON.stringify(normalizedImages) : null,
         brand || null,
         tags ? JSON.stringify(tags) : null,
         is_featured ? 1 : 0, is_active !== false ? 1 : 0,
@@ -634,10 +707,20 @@ exports.getReviews = async (req, res, next) => {
 exports.approveReview = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const { reply } = req.body || {};
     const [review] = await query('SELECT id, product_id FROM reviews WHERE id = ?', [id]);
     if (!review) return next(new AppError('Review not found.', 404));
 
-    await query('UPDATE reviews SET is_approved = 1 WHERE id = ?', [id]);
+    const replyText = typeof reply === 'string' && reply.trim() ? reply.trim() : null;
+
+    await query(
+      `UPDATE reviews
+       SET is_approved = 1,
+           admin_reply = COALESCE(?, admin_reply),
+           admin_reply_at = CASE WHEN ? IS NULL THEN admin_reply_at ELSE NOW() END
+       WHERE id = ?`,
+      [replyText, replyText, id]
+    );
 
     // Recalculate product rating
     const [avg] = await query(

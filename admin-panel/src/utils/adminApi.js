@@ -43,6 +43,13 @@ export const getDashboard  = () => adminApi.get('/admin/dashboard');
 // ─── Products ─────────────────────────────────────────────────
 export const getAdminProducts       = (params) => adminApi.get('/admin/products', { params });
 export const getAdminProduct        = (id)     => adminApi.get(`/admin/products/${id}`);
+export const uploadAdminProductImage = (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  return adminApi.post('/admin/products/upload-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
 export const createProduct          = (data)   => adminApi.post('/admin/products', data);
 export const updateProduct          = (id, data) => adminApi.put(`/admin/products/${id}`, data);
 export const deleteProduct          = (id)     => adminApi.delete(`/admin/products/${id}`);
@@ -68,7 +75,7 @@ export const deleteUser             = (id)     => adminApi.delete(`/admin/users/
 
 // ─── Reviews ──────────────────────────────────────────────────
 export const getAdminReviews        = (params) => adminApi.get('/admin/reviews', { params });
-export const approveReview          = (id)     => adminApi.patch(`/admin/reviews/${id}/approve`);
+export const approveReview          = (id, data = {}) => adminApi.patch(`/admin/reviews/${id}/approve`, data);
 export const deleteReview           = (id)     => adminApi.delete(`/admin/reviews/${id}`);
 
 // ─── Subscribers ──────────────────────────────────────────────

@@ -1,12 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { resolveAssetUrl } from '../../utils/helpers';
 import './Brands.css';
 
 const brands = [
-  { id: 1, name: 'Brand One',   placeholder: 'B1' },
-  { id: 2, name: 'Brand Two',   placeholder: 'B2' },
-  { id: 3, name: 'Brand Three', placeholder: 'B3' },
-  { id: 4, name: 'Brand Four',  placeholder: 'B4' },
+  { id: 1, name: 'MEMINE', image: '/images/brands/memine.png' },
+  { id: 2, name: 'RANGILA', image: '/images/brands/rangila.png' },
+  { id: 3, name: 'RUPOSHI', image: '/images/brands/ruposi.png' },
+  { id: 4, name: 'NIRMOL', image: '/images/brands/nirmol.png' },
 ];
 
 const Brands = () => {
@@ -32,7 +33,7 @@ const Brands = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          {brands.map((brand, i) => (
+          {brands.map((brand) => (
             <motion.div
               key={brand.id}
               className="brand-card"
@@ -40,7 +41,7 @@ const Brands = () => {
               transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="brand-card__logo-placeholder">
-                <span>{brand.placeholder}</span>
+                <img src={resolveAssetUrl(brand.image)} alt={`${brand.name} logo`} loading="lazy" />
               </div>
               <p className="brand-card__name">{brand.name}</p>
             </motion.div>

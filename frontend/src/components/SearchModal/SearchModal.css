@@ -29,12 +29,14 @@
   padding: var(--space-md) var(--space-lg);
   border-bottom: 1px solid var(--mid-gray);
   gap: var(--space-sm);
+  min-width: 0;
 }
 
 .search-modal__icon { color: var(--gray); font-size: 1.4rem; }
 
 .search-modal__input {
   flex: 1;
+  min-width: 0;
   border: none;
   font-size: 1.1rem;
   color: var(--text-dark);
@@ -63,6 +65,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .search-modal__esc-badge {
@@ -213,4 +216,41 @@
   background: rgba(102,126,234,0.1);
   border-color: var(--primary);
   color: var(--primary);
+}
+
+@media (max-width: 640px) {
+  .search-modal {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+    width: auto;
+    max-height: calc(100vh - 24px);
+    border-radius: 20px;
+  }
+
+  .search-modal__form {
+    flex-wrap: wrap;
+    padding: var(--space-md);
+  }
+
+  .search-modal__icon {
+    order: 1;
+  }
+
+  .search-modal__input {
+    order: 2;
+    width: 100%;
+    flex-basis: 100%;
+    font-size: 1rem;
+  }
+
+  .search-modal__clear {
+    order: 3;
+  }
+
+  .search-modal__close-btn {
+    order: 4;
+    margin-left: auto;
+  }
 }

@@ -11,12 +11,24 @@ const Reviews = () => {
   const [pages, setPages]       = useState(0);
   const [filters, setFilters]   = useState({ page: 1, status: '' });
   const [deleteModal, setDeleteModal] = useState(null);
+  const [replyDrafts, setReplyDrafts] = useState({});
+  const [savingReplyId, setSavingReplyId] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await getAdminReviews(filters);
-      if (data.success) { setReviews(data.reviews); setTotal(data.total); setPages(data.pages); }
+      if (data.success) {
+        setReviews(data.reviews);
+        setTotal(data.total);
+        setPages(data.pages);
+        setReplyDrafts(
+          data.reviews.reduce((acc, review) => {
+            acc[review.id] = review.admin_reply || '';
+            return acc;
+          }, {})
+        );
+      }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }, [filters]);
@@ -24,10 +36,17 @@ const Reviews = () => {
   useEffect(() => { load(); }, [load]);
 
   const handleApprove = async (id) => {
+    const reply = (replyDrafts[id] || '').trim();
+    setSavingReplyId(id);
     try {
-      const { data } = await approveReview(id);
+      const { data } = await approveReview(id, { reply });
       if (data.success) { toast.success(data.message); load(); }
     } catch { toast.error('Failed to approve review.'); }
+    finally { setSavingReplyId(null); }
+  };
+
+  const handleReplyChange = (id, value) => {
+    setReplyDrafts(prev => ({ ...prev, [id]: value }));
   };
 
   const handleDelete = async () => {
@@ -114,6 +133,25 @@ const Reviews = () => {
                 <p className="review-admin-card__body">{review.body}</p>
               )}
 
+              <div className="review-admin-card__reply">
+                <label className="admin-label" style={{ marginBottom: 8, display: 'block' }}>
+                  Admin Reply
+                </label>
+                <textarea
+                  className="admin-input review-admin-card__reply-input"
+                  rows="4"
+                  value={replyDrafts[review.id] || ''}
+                  onChange={e => handleReplyChange(review.id, e.target.value)}
+                  placeholder="Write a helpful reply for the customer..."
+                />
+                {review.admin_reply && (
+                  <div className="review-admin-card__reply-preview">
+                    <span className="review-admin-card__reply-label">Current Reply</span>
+                    <p>{review.admin_reply}</p>
+                  </div>
+                )}
+              </div>
+
               {/* Footer */}
               <div className="review-admin-card__footer">
                 <span className="review-admin-card__date">
@@ -126,9 +164,19 @@ const Reviews = () => {
                   {!review.is_approved && (
                     <button className="admin-btn admin-btn-sm"
                       style={{ background: 'var(--admin-success-bg)', color: 'var(--admin-success)' }}
-                      onClick={() => handleApprove(review.id)}>
+                      onClick={() => handleApprove(review.id)}
+                      disabled={savingReplyId === review.id}>
                       <span className="material-icons-round" style={{ fontSize: '0.9rem' }}>check_circle</span>
-                      Approve
+                      {savingReplyId === review.id ? 'Saving...' : (review.admin_reply ? 'Update Reply & Approve' : 'Approve & Reply')}
+                    </button>
+                  )}
+                  {review.is_approved && (
+                    <button className="admin-btn admin-btn-sm"
+                      style={{ background: 'var(--admin-border-light)', color: 'var(--admin-primary)' }}
+                      onClick={() => handleApprove(review.id)}
+                      disabled={savingReplyId === review.id}>
+                      <span className="material-icons-round" style={{ fontSize: '0.9rem' }}>reply</span>
+                      {savingReplyId === review.id ? 'Saving...' : 'Save Reply'}
                     </button>
                   )}
                   <button className="admin-btn admin-btn-ghost admin-btn-sm"

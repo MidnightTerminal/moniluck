@@ -73,6 +73,7 @@ export const addProductReview      = (slug, data)   => api.post(`/products/${slu
 export const loginUser             = (data) => api.post('/auth/login', data);
 export const registerUser          = (data) => api.post('/auth/register', data);
 export const getCurrentUser        = ()     => api.get('/auth/me');
+export const fetchMyOrders         = ()     => api.get('/auth/orders');
 export const updateUserProfile     = (data) => api.put('/auth/profile', data);
 export const changeUserPassword    = (data) => api.put('/auth/password', data);
 export const forgotPasswordReq     = (email) => api.post('/auth/forgot-password', { email });
@@ -82,6 +83,7 @@ export const validateResetToken    = (token) => api.get(`/auth/validate-reset-to
 // Cart
 export const validateCartItems     = (items) => api.post('/cart/validate', { items });
 export const checkProductStock     = (id)    => api.get(`/cart/stock/${id}`);
+export const placeOrder            = (data)   => api.post('/cart/checkout', data);
 
 // Contact
 export const sendContactForm       = (data) => api.post('/contact', data);

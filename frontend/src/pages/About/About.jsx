@@ -133,13 +133,23 @@ const About = () => {
               transition={{ duration: 0.6 }}
             >
               <div className="about-who__image-card about-who__image-card--main">
-                <div className="about-who__image-placeholder">
+                <img
+                  src="/images/hero/home-care.jpg"
+                  alt="Moniluck care products and manufacturing"
+                  className="about-who__image"
+                />
+                <div className="about-who__image-overlay">
                   <span className="material-icons-round">factory</span>
                   <p>Factory & Operations</p>
                 </div>
               </div>
               <div className="about-who__image-card about-who__image-card--small">
-                <div className="about-who__image-placeholder about-who__image-placeholder--small">
+                <img
+                  src="/images/hero/personal-care.jpg"
+                  alt="Modern laboratory and product innovation"
+                  className="about-who__image"
+                />
+                <div className="about-who__image-overlay about-who__image-overlay--small">
                   <span className="material-icons-round">science</span>
                   <p>Modern Lab</p>
                 </div>
@@ -425,8 +435,14 @@ const About = () => {
                 <h4 className="team-card__name">{member.name}</h4>
                 <p className="team-card__role">{member.role}</p>
                 <div className="team-card__socials">
-                  {['L', 'T', 'E'].map((s, si) => (
-                    <a key={si} href="#" className="team-card__social">{s}</a>
+                  {[
+                    { label: 'L', href: 'https://www.linkedin.com' },
+                    { label: 'T', href: 'https://x.com' },
+                    { label: 'E', href: 'mailto:info@moniluck.com' },
+                  ].map((social, si) => (
+                    <a key={si} href={social.href} className="team-card__social" target="_blank" rel="noreferrer">
+                      {social.label}
+                    </a>
                   ))}
                 </div>
               </motion.div>
