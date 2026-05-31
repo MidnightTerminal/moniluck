@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { resolveAssetUrl } from '../../utils/helpers';
 import './Signup.css';
 
 const Signup = () => {
@@ -149,7 +150,7 @@ const Signup = () => {
         {/* Logo */}
         <div className="auth-logo">
           <Link to="/">
-            <span className="auth-logo-text">Moniluck</span>
+            <img src={resolveAssetUrl('/shared/monilucklogo1.png')} alt="Moniluck Logo" className="auth-logo-image" />
           </Link>
         </div>
 

@@ -68,3 +68,9 @@
   align-items: center;
   gap: var(--space-sm);
 }
+
+.auth-logo{
+  margin: auto;
+  margin-bottom: 20px;
+  width: 80px;
+}

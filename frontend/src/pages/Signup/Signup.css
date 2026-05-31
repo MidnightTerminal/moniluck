@@ -52,6 +52,11 @@
   z-index: 1;
 }
 
+.auth-logo{
+  display: flex;
+  justify-content: center;
+}
+
 .input-toggle-pass:hover { color: var(--primary); }
 .input-toggle-pass .material-icons-round { font-size: 1.15rem; }
 

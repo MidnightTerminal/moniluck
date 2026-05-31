@@ -70,6 +70,12 @@
   background-clip: text;
 }
 
+.navbar__logo-image {
+  display: block;
+  width: clamp(140px, 14vw, 220px);
+  max-height: 48px;
+  object-fit: contain;
+}
 .navbar__logo:hover .navbar__logo-text { color: var(--primary); }
 
 /* ─── Desktop Nav Links ──────────────────────────────────────────────────────── */

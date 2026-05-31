@@ -70,6 +70,7 @@ if (process.env.NODE_ENV === 'development') {
 // ─── Static Files ─────────────────────────────────────────────────────────────
 const sharedImagesDir = path.resolve(__dirname, '../shared/images');
 app.use('/images', express.static(sharedImagesDir));
+app.use('/shared', express.static(path.resolve(__dirname, '../shared')));
 
 const ensureReviewReplyColumns = async () => {
   const columns = await query(

@@ -3,11 +3,13 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { resolveAssetUrl } from '../../utils/helpers';
 import SearchModal from '../SearchModal/SearchModal';
 import CartSidebar from '../CartSidebar/CartSidebar';
 import './Navbar.css';
 
 const Navbar = () => {
+  const logoSrc = resolveAssetUrl('/shared/monilucklogo2.png');
   const { user, isAuthenticated, logout } = useAuth();
   const { cartCount, setIsCartOpen }      = useCart();
   const navigate  = useNavigate();
@@ -97,16 +99,13 @@ const Navbar = () => {
         <div className="navbar__inner">
           {/* ── Logo ────────────────────────────────────────────────────── */}
           <Link to="/" className="navbar__logo">
-            <motion.div
-              className="navbar__logo-mark"
-              whileHover={{ rotate: 10, scale: 1.1 }}
+            <motion.img
+              src={logoSrc}
+              alt="Moniluck"
+              className="navbar__logo-image"
+              whileHover={{ scale: 1.03 }}
               transition={{ type: 'spring', stiffness: 400 }}
-            >
-              M
-            </motion.div>
-            <span className="navbar__logo-text">
-              Moni<span>luck</span>
-            </span>
+            />
           </Link>
 
           {/* ── Desktop Nav Links ────────────────────────────────────────── */}
@@ -307,8 +306,7 @@ const Navbar = () => {
               {/* Mobile Header */}
               <div className="mobile-menu__header">
                 <Link to="/" className="navbar__logo">
-                  <div className="navbar__logo-mark">M</div>
-                  <span className="navbar__logo-text">Moni<span>luck</span></span>
+                  <img src={logoSrc} alt="Moniluck" className="navbar__logo-image" />
                 </Link>
                 <button
                   className="mobile-menu__close"

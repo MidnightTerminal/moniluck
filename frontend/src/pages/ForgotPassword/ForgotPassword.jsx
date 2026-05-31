@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import { resolveAssetUrl } from '../../utils/helpers';
 import './ForgotPassword.css';
 
 const ForgotPassword = () => {
@@ -50,9 +51,9 @@ const ForgotPassword = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="auth-logo">
-          <Link to="/"><span className="auth-logo-text">Moniluck</span></Link>
-        </div>
+        {/* <div className="auth-logo">
+          <Link to="/"><img src={resolveAssetUrl('/shared/monilucklogo1.png')} alt="Moniluck Logo" className="auth-logo-image" /></Link>
+        </div> */}
 
         {!sent ? (
           <>
