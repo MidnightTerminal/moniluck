@@ -1,0 +1,59 @@
+name: 🚀 Build and Deploy Monorepo to cPanel
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build-and-deploy:
+    name: 🎉 Build Apps & Sync Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Fetch Code from Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24' 
+          cache: 'npm'
+
+      # --- 1. BUILD MAIN FRONTEND ---
+      - name: 🏗️ Build Main Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          # Rename the build folder and move it into the backend directory
+          mv build ../backend/public-frontend 
+          
+      # --- 2. BUILD ADMIN PANEL ---
+      - name: 🏗️ Build Admin Panel
+        run: |
+          cd admin-panel
+          npm install
+          npm run build
+          # Rename the admin build folder and move it into the backend directory
+          mv build ../backend/public-admin 
+
+      # --- 3. COPY SHARED ASSETS ---
+      - name: 📂 Move Shared Assets
+        run: |
+          # Copy the shared directory into the backend so Express can access it
+          cp -r shared backend/shared 
+
+      # --- 4. DEPLOY TO CPANEL ---
+      - name: 🚀 Sync Consolidated Backend to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./backend/ # Uploads the backend folder, which now holds BOTH frontends and shared assets
+          server-dir: ./        
+          exclude: |
+            **/node_modules/**
+            .git/**
+            .github/**

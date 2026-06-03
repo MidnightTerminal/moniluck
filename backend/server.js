@@ -7,6 +7,7 @@ const path         = require('path');
 require('dotenv').config();
 
 const { testConnection, query }    = require('./config/db');
+const { ensureReviewReplyColumns } = require('./utils/dbMigrations');
 const { notFound, errorHandler }   = require('./middleware/errorHandler');
 
 // ─── Route Imports ────────────────────────────────────────────────────────────
@@ -73,24 +74,7 @@ const sharedImagesDir = path.resolve(__dirname, '../shared/images');
 app.use('/images', express.static(sharedImagesDir));
 app.use('/shared', express.static(path.resolve(__dirname, '../shared')));
 
-const ensureReviewReplyColumns = async () => {
-  const columns = await query(
-    `SELECT COLUMN_NAME
-     FROM INFORMATION_SCHEMA.COLUMNS
-     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'reviews'`,
-    [process.env.DB_NAME || 'moniluck_db']
-  );
-
-  const columnNames = new Set(columns.map(column => column.COLUMN_NAME));
-
-  if (!columnNames.has('admin_reply')) {
-    await query('ALTER TABLE reviews ADD COLUMN admin_reply TEXT DEFAULT NULL');
-  }
-
-  if (!columnNames.has('admin_reply_at')) {
-    await query('ALTER TABLE reviews ADD COLUMN admin_reply_at DATETIME DEFAULT NULL');
-  }
-};
+// Migration helpers moved to backend/utils/dbMigrations.js
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -109,6 +93,17 @@ app.use('/api/cart',     cartRoutes);
 app.use('/api/contact',  contactRoutes);
 app.use('/api/settings',  settingsRoutes);
 app.use('/api/admin',    adminRoutes);
+
+
+app.use('/admin', express.static(path.join(__dirname, 'public-admin')));
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public-admin', 'index.html'));
+});
+
+app.use(express.static(path.join(__dirname, 'public-frontend')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public-frontend', 'index.html'));
+}); 
 
 // ─── Error Handling ───────────────────────────────────────────────────────────
 app.use(notFound);
