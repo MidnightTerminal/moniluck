@@ -180,20 +180,26 @@ export const cn = (...classes) => {
 /**
  * Resolve asset path to backend shared images origin.
  */
+const getOriginFromBaseUrl = (baseUrl) => {
+  if (!baseUrl) return null;
+
+  try {
+    return new URL(baseUrl, window.location.origin).origin;
+  } catch (error) {
+    return null;
+  }
+};
+
 export const resolveAssetUrl = (assetPath) => {
   if (!assetPath) return '';
   if (/^https?:\/\//i.test(assetPath)) return assetPath;
 
   const normalized = assetPath.startsWith('/') ? assetPath : `/${assetPath}`;
-  const apiBase = process.env.REACT_APP_API_URL || '';
+  const assetBase = process.env.REACT_APP_ASSET_URL || process.env.REACT_APP_API_URL || '';
+  const origin = getOriginFromBaseUrl(assetBase);
 
-  if (/^https?:\/\//i.test(apiBase)) {
-    try {
-      const origin = new URL(apiBase).origin;
-      return `${origin}${normalized}`;
-    } catch (error) {
-      // Ignore invalid URL and fallback below.
-    }
+  if (origin) {
+    return `${origin}${normalized}`;
   }
 
   return normalized;
