@@ -196,5 +196,5 @@ export const resolveAssetUrl = (assetPath) => {
     }
   }
 
-  return `${window.location.protocol}//${window.location.hostname}:5000${normalized}`;
+  return normalized;
 };
