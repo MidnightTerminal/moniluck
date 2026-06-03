@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
+import { resolveAssetUrl } from '../../utils/helpers';
 import './Cart.css';
 
 const Cart = () => {
@@ -9,6 +11,8 @@ const Cart = () => {
         cartItems, cartCount, cartSubtotal, cartSavings,
         removeFromCart, updateQuantity, clearCart,
     } = useCart();
+    const { shipping } = useSiteSettings();
+    const hasFreeShipping = shipping.freeShippingEnabled && cartSubtotal >= shipping.freeShippingMin;
 
     if (cartItems.length === 0) {
         return (
@@ -28,7 +32,7 @@ const Cart = () => {
                         </motion.div>
                         <h2>Your Cart is Empty</h2>
                         <p>Looks like you haven't added any products to your cart yet. Start exploring!</p>
-                        <Link to="/products" className="btn btn-primary btn-lg">
+                        <Link to="/products" className="btn btn-primary cart-empty-btn">
                             <span className="material-icons-round">shopping_bag</span>
                             Start Shopping
                         </Link>
@@ -84,7 +88,16 @@ const Cart = () => {
                                     {/* Product */}
                                     <div className="cart-row__product">
                                         <div className="cart-row__image">
-                                            <span className="material-icons-round">shopping_bag</span>
+                                            {item.thumbnail ? (
+                                                <img
+                                                    src={resolveAssetUrl(item.thumbnail)}
+                                                    alt={item.name}
+                                                    className="cart-row__image-media"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <span className="material-icons-round">shopping_bag</span>
+                                            )}
                                         </div>
                                         <div className="cart-row__info">
                                             <Link to={`/products/${item.slug}`} className="cart-row__name">
@@ -195,14 +208,14 @@ const Cart = () => {
                             <div className="cart-summary__row">
                                 <span>Shipping</span>
                                 <span className="cart-summary__free">
-                                    {cartSubtotal >= 50 ? 'Free' : 'Tk 5.99'}
+                                    {hasFreeShipping ? 'Free' : `Tk ${shipping.standard.cost}`}
                                 </span>
                             </div>
 
-                            {cartSubtotal < 50 && (
+                            {shipping.freeShippingEnabled && !hasFreeShipping && (
                                 <div className="cart-summary__free-shipping-msg">
                                     <span className="material-icons-round">info</span>
-                                    Add Tk {(50 - cartSubtotal).toFixed(2)} more for <strong>free shipping</strong>
+                                    Add Tk {(shipping.freeShippingMin - cartSubtotal).toFixed(2)} more for <strong>free shipping</strong>
                                 </div>
                             )}
 
@@ -211,7 +224,7 @@ const Cart = () => {
                             <div className="cart-summary__row cart-summary__row--total">
                                 <span>Total</span>
                                 <span>
-                                    Tk {(cartSubtotal + (cartSubtotal >= 50 ? 0 : 5.99)).toFixed(2)}
+                                    Tk {(cartSubtotal + (hasFreeShipping ? 0 : shipping.standard.cost)).toFixed(2)}
                                 </span>
                             </div>
                         </div>

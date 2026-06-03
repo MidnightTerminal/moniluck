@@ -9,26 +9,34 @@ const settingsSections = [
     title: 'General',
     icon: 'settings',
     fields: [
-      { key: 'site_name',     label: 'Site Name',    type: 'text' },
-      { key: 'site_tagline',  label: 'Tagline',      type: 'text' },
-      { key: 'currency_symbol', label: 'Currency Symbol', type: 'text' },
+      { key: 'site_name',         label: 'Site Name',          type: 'text' },
+      { key: 'site_tagline',      label: 'Tagline',            type: 'text' },
+      { key: 'footer_description', label: 'Footer Description', type: 'textarea' },
+      { key: 'currency_symbol',   label: 'Currency Symbol',    type: 'text' },
     ],
   },
   {
     title: 'Contact Information',
     icon: 'contact_mail',
     fields: [
-      { key: 'contact_email',   label: 'Contact Email',   type: 'text' },
-      { key: 'contact_phone',   label: 'Contact Phone',   type: 'text' },
+      { key: 'contact_email',   label: 'Contact Email',    type: 'text' },
+      { key: 'contact_phone',   label: 'Contact Phone',    type: 'text' },
       { key: 'contact_address', label: 'Contact Address',  type: 'text' },
+      { key: 'contact_hours',   label: 'Working Hours',    type: 'text' },
     ],
   },
   {
     title: 'Shipping',
     icon: 'local_shipping',
     fields: [
-      { key: 'free_shipping_min', label: 'Free Shipping Minimum (Tk)', type: 'number' },
-      { key: 'shipping_cost',     label: 'Standard Shipping Cost (Tk)', type: 'number' },
+      { key: 'free_shipping_enabled', label: 'Free Shipping Offer', type: 'toggle' },
+      { key: 'free_shipping_min',     label: 'Free Shipping Minimum (Tk)', type: 'number' },
+      { key: 'shipping_cost',         label: 'Standard Shipping Cost (Tk)', type: 'number' },
+      { key: 'standard_shipping_time', label: 'Standard Shipping Time', type: 'text' },
+      { key: 'express_shipping_cost',  label: 'Express Shipping Cost (Tk)', type: 'number' },
+      { key: 'express_shipping_time',  label: 'Express Shipping Time', type: 'text' },
+      { key: 'same_day_shipping_cost', label: 'Same Day Shipping Cost (Tk)', type: 'number' },
+      { key: 'same_day_shipping_time', label: 'Same Day Shipping Time', type: 'text' },
     ],
   },
   {
@@ -39,6 +47,17 @@ const settingsSections = [
       { key: 'social_instagram', label: 'Instagram URL', type: 'text' },
       { key: 'social_twitter',   label: 'Twitter URL',   type: 'text' },
       { key: 'social_youtube',   label: 'YouTube URL',   type: 'text' },
+    ],
+  },
+  {
+    title: 'SEO & Policies',
+    icon: 'campaign',
+    fields: [
+      { key: 'meta_title',         label: 'Meta Title',         type: 'text' },
+      { key: 'meta_description',   label: 'Meta Description',   type: 'textarea' },
+      { key: 'privacy_policy_url', label: 'Privacy Policy URL', type: 'text' },
+      { key: 'terms_of_service_url', label: 'Terms of Service URL', type: 'text' },
+      { key: 'refund_policy_url',  label: 'Refund Policy URL',  type: 'text' },
     ],
   },
   {
@@ -67,6 +86,36 @@ const Settings = () => {
     };
     load();
   }, []);
+
+  const getToggleCopy = (key, value) => {
+    const enabled = value === 'true';
+
+    if (key === 'free_shipping_enabled') {
+      return enabled
+        ? {
+            title: 'Free shipping is ON',
+            description: 'Orders that meet the minimum threshold will ship for free.',
+            ariaLabel: 'Disable free shipping offer',
+          }
+        : {
+            title: 'Free shipping is OFF',
+            description: 'Shipping will always use the standard delivery cost.',
+            ariaLabel: 'Enable free shipping offer',
+          };
+    }
+
+    return enabled
+      ? {
+          title: 'Maintenance mode is ON',
+          description: 'Visitors will see the maintenance page.',
+          ariaLabel: 'Disable maintenance mode',
+        }
+      : {
+          title: 'Maintenance mode is OFF',
+          description: 'Visitors will see the normal storefront.',
+          ariaLabel: 'Enable maintenance mode',
+        };
+  };
 
   const handleChange = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -156,23 +205,21 @@ const Settings = () => {
 
                   {field.type === 'toggle' ? (
                     <div className="settings-toggle-wrapper">
+                      <div className="settings-toggle-copy">
+                        <strong>{getToggleCopy(field.key, settings[field.key]).title}</strong>
+                        <span className="settings-toggle-label">
+                          {getToggleCopy(field.key, settings[field.key]).description}
+                        </span>
+                      </div>
                       <button
                         className={`admin-toggle ${settings[field.key] === 'true' ? 'active' : ''}`}
                         onClick={() => handleChange(field.key, settings[field.key] === 'true' ? 'false' : 'true')}
                         type="button"
+                        aria-pressed={settings[field.key] === 'true'}
+                        aria-label={getToggleCopy(field.key, settings[field.key]).ariaLabel}
                       >
                         <div className="admin-toggle__slider" />
                       </button>
-                      <span className="settings-toggle-label">
-                        {settings[field.key] === 'true' ? (
-                          <span style={{ color: 'var(--admin-warning)', fontWeight: 600 }}>
-                            <span className="material-icons-round" style={{ fontSize: '0.9rem', verticalAlign: 'middle', marginRight: 4 }}>warning</span>
-                            Site is in maintenance mode
-                          </span>
-                        ) : (
-                          <span style={{ color: 'var(--admin-success)' }}>Site is live</span>
-                        )}
-                      </span>
                     </div>
                   ) : field.type === 'textarea' ? (
                     <textarea
@@ -230,6 +277,20 @@ const Settings = () => {
                   Rebuild
                 </button>
               </div>
+            </div>
+          )}
+
+          {currentSection.title === 'Maintenance' && (
+            <div className="admin-card settings-maintenance-note" style={{ marginTop: 24 }}>
+              <div className="settings-section-header">
+                <span className="material-icons-round" style={{ color: 'var(--admin-warning)', fontSize: '1.3rem' }}>
+                  info
+                </span>
+                <h3 style={{ color: 'var(--admin-warning)' }}>Maintenance Switch</h3>
+              </div>
+              <p>
+                Use the toggle above to put the storefront into maintenance mode. When it is on, the main site will show the maintenance page instead of the normal pages.
+              </p>
             </div>
           )}
         </div>

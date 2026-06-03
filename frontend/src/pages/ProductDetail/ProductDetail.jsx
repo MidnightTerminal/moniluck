@@ -10,11 +10,13 @@ import ProductCard from '../../components/ProductCard/ProductCard';
 import { resolveAssetUrl } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 import './ProductDetail.css';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const ProductDetail = () => {
   const { slug } = useParams();
   const { addToCart, isInCart, getCartItem, updateQuantity, toggleWishlist, isInWishlist } = useCart();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { shipping } = useSiteSettings();
 
   const [product, setProduct]   = useState(null);
   const [related, setRelated]   = useState([]);
@@ -323,7 +325,7 @@ const ProductDetail = () => {
             <div className="pd-trust">
               <div className="pd-trust__item">
                 <span className="material-icons-round">local_shipping</span>
-                <span>Free Shipping</span>
+                <span>{shipping.freeShippingEnabled ? 'Free Shipping' : 'Shipping Available'}</span>
               </div>
               <div className="pd-trust__item">
                 <span className="material-icons-round">autorenew</span>

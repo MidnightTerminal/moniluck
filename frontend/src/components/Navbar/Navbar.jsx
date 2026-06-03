@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { resolveAssetUrl } from '../../utils/helpers';
 import SearchModal from '../SearchModal/SearchModal';
 import CartSidebar from '../CartSidebar/CartSidebar';
@@ -12,6 +13,7 @@ const Navbar = () => {
   const logoSrc = resolveAssetUrl('/shared/monilucklogo2.png');
   const { user, isAuthenticated, logout } = useAuth();
   const { cartCount, setIsCartOpen }      = useCart();
+  const { siteName } = useSiteSettings();
   const navigate  = useNavigate();
   const location  = useLocation();
 
@@ -101,7 +103,7 @@ const Navbar = () => {
           <Link to="/" className="navbar__logo">
             <motion.img
               src={logoSrc}
-              alt="Moniluck"
+              alt={siteName}
               className="navbar__logo-image"
               whileHover={{ scale: 1.03 }}
               transition={{ type: 'spring', stiffness: 400 }}
@@ -251,7 +253,7 @@ const Navbar = () => {
                     ) : (
                       <>
                         <div className="navbar__dropdown-auth">
-                          <p>Welcome to Moniluck!</p>
+                          <p>Welcome to {siteName}!</p>
                           <p>Sign in for the best experience</p>
                         </div>
                         <div className="navbar__dropdown-divider" />
@@ -306,7 +308,7 @@ const Navbar = () => {
               {/* Mobile Header */}
               <div className="mobile-menu__header">
                 <Link to="/" className="navbar__logo">
-                  <img src={logoSrc} alt="Moniluck" className="navbar__logo-image" />
+                  <img src={logoSrc} alt={siteName} className="navbar__logo-image" />
                 </Link>
                 <button
                   className="mobile-menu__close"

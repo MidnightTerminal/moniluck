@@ -5,7 +5,7 @@ import './Testimonials.css';
 const testimonials = [
   {
     id    : 1,
-    name  : 'Sarah Johnson',
+    name  : 'Mr. Abdul Karim',
     role  : 'Homemaker',
     avatar: 'SJ',
     text  : 'Moniluck products have completely transformed how I clean my home. The all-purpose cleaner is incredible — one bottle does everything! My house has never smelled this fresh.',
@@ -14,7 +14,7 @@ const testimonials = [
   },
   {
     id    : 2,
-    name  : 'Michael Chen',
+    name  : 'Chef Sanjay Jha',
     role  : 'Chef & Food Blogger',
     avatar: 'MC',
     text  : 'As a chef, kitchen hygiene is paramount. The Moniluck Kitchen Degreaser is the most effective product I\'ve ever used. It cuts through grease like magic. Absolutely love it!',
@@ -23,7 +23,7 @@ const testimonials = [
   },
   {
     id    : 3,
-    name  : 'Emily Rodriguez',
+    name  : 'Ms. Emily Rose',
     role  : 'Working Professional',
     avatar: 'ER',
     text  : 'The moisturizing body lotion is divine! My skin stays hydrated all day even in winter. Plus, knowing it\'s eco-friendly makes me feel great about my purchase. Highly recommend!',

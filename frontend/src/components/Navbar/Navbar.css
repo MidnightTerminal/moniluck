@@ -73,6 +73,7 @@
 .navbar__logo-image {
   display: block;
   width: clamp(140px, 14vw, 220px);
+  /* width: 100px; */
   max-height: 48px;
   object-fit: contain;
 }

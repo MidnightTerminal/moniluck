@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getAdminOrders, deleteOrder } from '../../utils/adminApi';
+import { formatDhakaDate } from '../../utils/date';
 import toast from 'react-hot-toast';
 import './Orders.css';
 
@@ -92,7 +93,7 @@ const Orders = () => {
                   <td><span className={`admin-badge ${statusColors[o.status] || 'admin-badge-neutral'}`}>{o.status}</span></td>
                   <td><span className={`admin-badge ${paymentColors[o.payment_status] || 'admin-badge-neutral'}`}>{o.payment_status}</span></td>
                   <td style={{ fontSize: '0.82rem', color: 'var(--admin-text-secondary)' }}>
-                    {new Date(o.created_at).toLocaleDateString()}
+                    {formatDhakaDate(o.created_at)}
                   </td>
                   <td>
                     <div className="actions">

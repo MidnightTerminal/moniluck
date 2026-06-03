@@ -91,7 +91,7 @@ const Users = () => {
       <div className="admin-toolbar">
         <div className="admin-search">
           <span className="material-icons-round admin-search-icon">search</span>
-          <input placeholder="Search by name or email..."
+          <input placeholder="Search by name, email, or phone..."
             value={filters.search}
             onChange={e => setFilters(p => ({ ...p, search: e.target.value, page: 1 }))} />
         </div>

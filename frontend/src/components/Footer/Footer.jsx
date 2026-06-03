@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { CONTACT_INFO, SOCIAL_LINKS, FOOTER_LINKS } from '../../utils/constants';
+import { FOOTER_LINKS } from '../../utils/constants';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import './Footer.css';
 
 const SOCIAL_ICONS = {
@@ -15,6 +16,7 @@ const SOCIAL_ICONS = {
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { siteName, footerDescription, socialLinks, contact, policyLinks } = useSiteSettings();
 
   return (
     <footer className="footer">
@@ -25,14 +27,15 @@ const Footer = () => {
             <div className="footer__brand">
               <Link to="/" className="footer__logo">
                 <div className="footer__logo-mark">M</div>
-                <span className="footer__logo-text">Moni<span>luck</span></span>
+                <span className="footer__logo-text">{siteName}</span>
               </Link>
               <p className="footer__brand-desc">
-                Premium care products for every corner of your life. From home to personal care — we've got you covered.
+                {footerDescription}
               </p>
               <div className="footer__socials">
-                {SOCIAL_LINKS.map(({ platform, url, label }) => {
+                {socialLinks.map(({ platform, url, label }) => {
                   const Icon = SOCIAL_ICONS[platform];
+                  const isPlaceholder = !url || url === '#';
 
                   return (
                   <motion.a
@@ -42,7 +45,7 @@ const Footer = () => {
                     whileHover={{ y: -3, scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     aria-label={platform}
-                    onClick={url === '#' ? (event) => event.preventDefault() : undefined}
+                    onClick={isPlaceholder ? (event) => event.preventDefault() : undefined}
                   >
                     {Icon ? <Icon className="footer__social-icon" /> : <span className="footer__social-icon">{label}</span>}
                   </motion.a>
@@ -77,19 +80,19 @@ const Footer = () => {
               <div className="footer__contact-list">
                 <div className="footer__contact-item">
                   <span className="material-icons-round">location_on</span>
-                  <span>{CONTACT_INFO.address}</span>
+                  <span>{contact.address}</span>
                 </div>
                 <div className="footer__contact-item">
                   <span className="material-icons-round">email</span>
-                  <a href={`mailto:${CONTACT_INFO.email}`}>{CONTACT_INFO.email}</a>
+                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
                 </div>
                 <div className="footer__contact-item">
                   <span className="material-icons-round">phone</span>
-                  <a href="tel:+1234567890">{CONTACT_INFO.phone}</a>
+                  <a href={`tel:${contact.phone}`}>{contact.phone}</a>
                 </div>
                 <div className="footer__contact-item">
                   <span className="material-icons-round">schedule</span>
-                  <span>{CONTACT_INFO.hours}</span>
+                  <span>{contact.hours}</span>
                 </div>
               </div>
             </div>
@@ -101,13 +104,24 @@ const Footer = () => {
       <div className="footer__bottom">
         <div className="container">
           <div className="footer__bottom-inner">
-            <p>© {currentYear} <strong>Moniluck</strong>. All rights reserved.</p>
+            <p>© {currentYear} <strong>{siteName}</strong>. All rights reserved.</p>
+            <p>© Developed by <strong>Mehedi</strong></p>
             <div className="footer__bottom-links">
-              <a href="#">Privacy Policy</a>
+              <a href={policyLinks.privacy}>Privacy Policy</a>
               <span>•</span>
-              <a href="#">Terms of Service</a>
+              <a
+                href={policyLinks.terms}
+                onClick={policyLinks.terms === '#' ? (event) => event.preventDefault() : undefined}
+              >
+                Terms of Service
+              </a>
               <span>•</span>
-              <a href="#">Refund Policy</a>
+              <a
+                href={policyLinks.refund}
+                onClick={policyLinks.refund === '#' ? (event) => event.preventDefault() : undefined}
+              >
+                Refund Policy
+              </a>
             </div>
           </div>
         </div>

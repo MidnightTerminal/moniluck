@@ -65,15 +65,72 @@
 }
 
 .settings-toggle-wrapper {
-  display: flex; align-items: center; gap: 14px;
-  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 16px;
   background: var(--admin-border-light);
   border-radius: var(--admin-radius-md);
 }
 
+.settings-toggle-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-toggle-copy strong {
+  font-size: 0.92rem;
+  color: var(--admin-text);
+}
+
 .settings-toggle-label {
   font-size: 0.88rem;
+  color: var(--admin-text-secondary);
 }
+
+.admin-toggle {
+  width: 42px;
+  height: 24px;
+  border-radius: 20px;
+  background: var(--admin-border);
+  position: relative;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.admin-toggle.active {
+  background: var(--admin-success);
+}
+
+.admin-toggle__slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: var(--transition);
+}
+
+.admin-toggle.active .admin-toggle__slider {
+  left: 21px;
+}
+
+.settings-maintenance-note {
+  border-color: rgba(245, 158, 11, 0.2);
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.9), rgba(255, 255, 255, 0.95));
+}
+
+.settings-maintenance-note p {
+  color: var(--admin-text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
 
 /* ─── Danger Zone ────────────────────────────────────── */
 .settings-danger-zone {

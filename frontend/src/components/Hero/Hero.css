@@ -54,7 +54,7 @@
   z-index: 2;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 80px var(--space-lg) var(--space-4xl);
+  padding: 20px var(--space-lg) var(--space-4xl);
   width: 100%;
 }
 
@@ -451,7 +451,7 @@
   .hero__content {
     grid-template-columns: 1fr;
     min-height: auto;
-    padding: var(--space-2xl) 0;
+    /* padding: var(--space-2xl) 0; */
     text-align: center;
   }
 
@@ -470,7 +470,7 @@
 
   .hero__scroll { display: none; }
   .hero__badge { right: 0; }
-  .hero__rating-card { left: 0; }
+  .hero__rating-card { left: 0; display: none;}
 }
 
 @media (max-width: 480px) {

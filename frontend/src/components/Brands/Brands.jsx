@@ -8,6 +8,7 @@ const brands = [
   { id: 2, name: 'RANGILA', image: '/images/brands/rangila.png' },
   { id: 3, name: 'RUPOSHI', image: '/images/brands/ruposi.png' },
   { id: 4, name: 'NIRMOL', image: '/images/brands/nirmol.png' },
+  { id: 5, name: 'MEEM', image: '/images/brands/meem.png' },
 ];
 
 const Brands = () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getAdminOrder, updateOrderStatus } from '../../utils/adminApi';
+import { formatDhakaDateTime } from '../../utils/date';
 import toast from 'react-hot-toast';
 import './OrderDetail.css';
 
@@ -58,7 +59,7 @@ const OrderDetail = () => {
         <div>
           {/* Status Controls */}
           <div className="admin-card" style={{ marginBottom: 24 }}>
-            <h3 className="admin-card-title">Update Status</h3>
+            {/* <h3 className="admin-card-title">Update Status</h3> */}
             <div className="admin-form-row">
               <div className="admin-form-group">
                 <label className="admin-label">Order Status</label>
@@ -83,7 +84,7 @@ const OrderDetail = () => {
 
           {/* Order Items */}
           <div className="admin-card">
-            <h3 className="admin-card-title">Items ({order.items?.length || 0})</h3>
+            <h3 className="admin-card-title" style={{marginBottom: '12px'}}>Items ({order.items?.length || 0})</h3>
             <div className="admin-table-wrapper">
               <table className="admin-table">
                 <thead><tr><th>Product</th><th>Price</th><th>Qty</th><th>Total</th></tr></thead>
@@ -106,8 +107,8 @@ const OrderDetail = () => {
         <div>
           {/* Summary */}
           <div className="admin-card" style={{ marginBottom: 24 }}>
-            <h3 className="admin-card-title">Summary</h3>
-            <div className="order-summary-rows">
+                <h3 className="admin-card-title" style={{ textAlign: 'center' , marginBottom: '10px'}}>Summary</h3>
+                <div className="order-summary-rows">
               <div className="order-summary-row"><span>Subtotal</span><span>Tk {parseFloat(order.subtotal).toFixed(2)}</span></div>
               <div className="order-summary-row"><span>Shipping</span><span>Tk {parseFloat(order.shipping_cost).toFixed(2)}</span></div>
               {parseFloat(order.discount) > 0 && (
@@ -122,7 +123,7 @@ const OrderDetail = () => {
 
           {/* Shipping */}
           <div className="admin-card" style={{ marginBottom: 24 }}>
-            <h3 className="admin-card-title">Shipping Address</h3>
+            <h3 className="admin-card-title" style={{textAlign: 'center', marginBottom: '10px'}}>Shipping Address</h3>
             <div style={{ fontSize: '0.88rem', lineHeight: 1.7, color: 'var(--admin-text-secondary)' }}>
               <p><strong>{order.ship_first_name} {order.ship_last_name}</strong></p>
               <p>{order.ship_address}</p>
@@ -137,17 +138,17 @@ const OrderDetail = () => {
           {/* Notes */}
           {order.notes && (
             <div className="admin-card">
-              <h3 className="admin-card-title">Order Notes</h3>
+              <h3 className="admin-card-title" style={{ textAlign: 'center', marginBottom: '10px' }}>Order Notes</h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--admin-text-secondary)', lineHeight: 1.6 }}>{order.notes}</p>
             </div>
           )}
 
           {/* Meta */}
           <div className="admin-card" style={{ marginTop: 24 }}>
-            <h3 className="admin-card-title">Details</h3>
+            <h3 className="admin-card-title" style={{ textAlign: 'center', marginBottom: '10px' }}>Details</h3>
             <div style={{ fontSize: '0.82rem', color: 'var(--admin-text-secondary)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <p>Created: <strong>{new Date(order.created_at).toLocaleString()}</strong></p>
-              <p>Updated: <strong>{new Date(order.updated_at).toLocaleString()}</strong></p>
+              <p>Created: <strong>{formatDhakaDateTime(order.created_at)}</strong></p>
+              <p>Updated: <strong>{formatDhakaDateTime(order.updated_at)}</strong></p>
             </div>
           </div>
         </div>

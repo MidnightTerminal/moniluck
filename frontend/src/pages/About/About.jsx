@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
+import { resolveAssetUrl } from '../../utils/helpers';
 import './About.css';
 
 const milestones = [
@@ -30,6 +32,14 @@ const stats = [
   { value: '4',    label: 'Brand Partners',     icon: 'handshake' },
 ];
 
+const brandLogos = [
+  { name: 'Memine', src: resolveAssetUrl('/shared/images/brands/memine.png') },
+  { name: 'Nirmol', src: resolveAssetUrl('/shared/images/brands/nirmol.png') },
+  { name: 'Rangila', src: resolveAssetUrl('/shared/images/brands/rangila.png') },
+  { name: 'Ruposi', src: resolveAssetUrl('/shared/images/brands/ruposi.png') },
+  { name: 'Meem', src: resolveAssetUrl('/shared/images/brands/meem.png') },
+];
+
 const teamMembers = [
   { name: 'Team Member 1', role: 'CEO & Founder',     initials: 'TM', color: '#667eea' },
   { name: 'Team Member 2', role: 'Managing Director', initials: 'TM', color: '#f093fb' },
@@ -38,6 +48,8 @@ const teamMembers = [
 ];
 
 const About = () => {
+  const { contact } = useSiteSettings();
+
   const sectionVariants = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
@@ -117,6 +129,32 @@ const About = () => {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* ─── Brand Bar ───────────────────────────────────────────── */}
+      <section className="about-brands" aria-label="Brand partners">
+        <div className="container">
+          <div className="about-brands__header">
+            <span className="section-tag">Our Brands</span>
+            <h2 className="about-brands__title">Our <span>Brands</span></h2>
+          </div>
+        </div>
+        <div className="about-brands__track">
+          <div className="about-brands__group">
+            {brandLogos.map((brand) => (
+              <div key={brand.name} className="about-brand-card">
+                <img src={brand.src} alt={brand.name} className="about-brand-card__logo" />
+              </div>
+            ))}
+          </div>
+          <div className="about-brands__group" aria-hidden="true">
+            {brandLogos.map((brand) => (
+              <div key={`${brand.name}-clone`} className="about-brand-card">
+                <img src={brand.src} alt="" className="about-brand-card__logo" />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -438,7 +476,7 @@ const About = () => {
                   {[
                     { label: 'L', href: 'https://www.linkedin.com' },
                     { label: 'T', href: 'https://x.com' },
-                    { label: 'E', href: 'mailto:info@moniluck.com' },
+                    { label: 'E', href: `mailto:${contact.email}` },
                   ].map((social, si) => (
                     <a key={si} href={social.href} className="team-card__social" target="_blank" rel="noreferrer">
                       {social.label}

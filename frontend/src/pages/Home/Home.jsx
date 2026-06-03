@@ -8,9 +8,12 @@ import WhyChooseUs from '../../components/WhyChooseUs/WhyChooseUs';
 import Brands from '../../components/Brands/Brands';
 import Testimonials from '../../components/Testimonials/Testimonials';
 import Newsletter from '../../components/Newsletter/Newsletter';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import './Home.css';
 
 const Home = () => {
+  const { shipping } = useSiteSettings();
+
   return (
     <motion.div
       className="home-page"
@@ -27,8 +30,12 @@ const Home = () => {
             <div className="home-stats__item">
               <span className="material-icons-round">local_shipping</span>
               <div>
-                <h4>Free Shipping</h4>
-                <p>On orders over Tk 50</p>
+                <h4>{shipping.freeShippingEnabled ? 'Free Shipping' : 'Shipping Offer'}</h4>
+                <p>
+                  {shipping.freeShippingEnabled
+                    ? `On orders over Tk ${shipping.freeShippingMin}`
+                    : `Standard shipping starts at Tk ${shipping.standard.cost}`}
+                </p>
               </div>
             </div>
             <div className="home-stats__item">

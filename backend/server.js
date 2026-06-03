@@ -14,6 +14,7 @@ const authRoutes    = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const cartRoutes    = require('./routes/cartRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 const adminRoutes   = require('./routes/adminRoutes');
 
 const app  = express();
@@ -106,6 +107,7 @@ app.use('/api/auth',     authLimiter, authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart',     cartRoutes);
 app.use('/api/contact',  contactRoutes);
+app.use('/api/settings',  settingsRoutes);
 app.use('/api/admin',    adminRoutes);
 
 // ─── Error Handling ───────────────────────────────────────────────────────────

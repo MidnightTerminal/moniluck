@@ -9,9 +9,9 @@
 }
 
 .cart-empty .material-icons-round {
-  font-size: 5rem;
+  font-size: 2rem;
   color: var(--mid-gray);
-  margin-bottom: var(--space-lg);
+  /* margin-bottom: var(--space-lg); */
   display: block;
 }
 
@@ -26,6 +26,11 @@
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.cart-empty-btn{
+    padding: 16px;
+    font-size: 1.05rem;
 }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
@@ -133,9 +138,17 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .cart-row__image .material-icons-round { font-size: 1.8rem; color: var(--gray); opacity: 0.4; }
+
+.cart-row__image-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
 .cart-row__name {
   font-size: 0.92rem;

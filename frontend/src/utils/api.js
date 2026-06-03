@@ -89,4 +89,7 @@ export const placeOrder            = (data)   => api.post('/cart/checkout', data
 export const sendContactForm       = (data) => api.post('/contact', data);
 export const subscribeToNewsletter = (email) => api.post('/contact/newsletter', { email });
 
+// Site Settings
+export const fetchSiteSettings     = () => api.get('/settings');
+
 export default api;

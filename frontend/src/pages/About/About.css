@@ -5,7 +5,7 @@
 /* ─── Hero ───────────────────────────────────────────────────── */
 .about-hero {
   position: relative;
-  padding: var(--space-4xl) 0 var(--space-3xl);
+  padding: 20px;
   overflow: hidden;
   min-height: 520px;
   display: flex;
@@ -143,6 +143,75 @@
   font-size: 0.8rem;
   color: rgba(255,255,255,0.7);
   font-weight: 500;
+}
+
+/* ─── Brand Bar ─────────────────────────────────────────────── */
+.about-brands {
+  background: var(--white);
+  border-bottom: 1px solid var(--light-gray);
+  overflow: hidden;
+  padding: var(--space-xl) 0;
+}
+
+.about-brands__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.about-brands__title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-top: 6px;
+}
+
+.about-brands__title span {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about-brands__track {
+  display: flex;
+  width: max-content;
+  animation: brandsScroll 28s linear infinite;
+}
+
+.about-brands__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+.about-brand-card {
+  width: 180px;
+  height: 96px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+  border: 1px solid rgba(226,232,240,0.9);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+}
+
+.about-brand-card__logo {
+  max-width: 118px;
+  max-height: 54px;
+  object-fit: contain;
+  filter: saturate(0.95) contrast(1.02);
+  opacity: 0.95;
+}
+
+@keyframes brandsScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 /* ─── Who We Are ─────────────────────────────────────────────── */
@@ -686,6 +755,20 @@
 
   .about-stats__grid { grid-template-columns: repeat(3, 1fr); }
 
+  .about-brands {
+    padding: var(--space-lg) 0;
+  }
+
+  .about-brand-card {
+    width: 150px;
+    height: 84px;
+  }
+
+  .about-brand-card__logo {
+    max-width: 100px;
+    max-height: 44px;
+  }
+
   /* Timeline Mobile */
   .timeline__line { left: 20px; }
 
@@ -716,4 +799,14 @@
   .about-team__grid   { grid-template-columns: 1fr; }
   .about-who__visual { height: 280px; }
   .about-who__image-card--small { display: none; }
+
+  .about-brand-card {
+    width: 132px;
+    height: 78px;
+  }
+
+  .about-brand-card__logo {
+    max-width: 88px;
+    max-height: 38px;
+  }
 }

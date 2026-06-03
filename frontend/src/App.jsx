@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
@@ -25,6 +26,7 @@ const Profile = lazy(() => import('./pages/Profile/Profile'));
 const NotFound = lazy(() => import('./pages/NotFound/NotFound'));
 const Cart = lazy(() => import('./pages/Cart/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout/Checkout'));
+const Maintenance = lazy(() => import('./pages/Maintenance/Maintenance'));
 
 
 /* ─── Auth Route (redirect if logged in) ─────────────────────────────────────── */
@@ -35,78 +37,126 @@ const AuthRoute = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <CartProvider>
-          <ScrollToTop />
-          <div className="app">
-            <Navbar />
-            <main className="main-content">
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={<Home />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/products/:slug" element={<ProductDetail />} />
-                  <Route path="/category/:slug" element={<Products />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/media" element={<Media />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
+    <SiteSettingsProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </SiteSettingsProvider>
+  );
+}
 
-                  {/* Auth Routes — redirect to home if already logged in */}
-                  <Route path="/login" element={
-                    <AuthRoute><Login /></AuthRoute>
-                  } />
-                  <Route path="/signup" element={
-                    <AuthRoute><Signup /></AuthRoute>
-                  } />
-                  <Route path="/forgot-password" element={
-                    <AuthRoute><ForgotPassword /></AuthRoute>
-                  } />
-                  <Route path="/reset-password/:token" element={<ResetPassword />} />
+function AppContent() {
+  const { loading, maintenanceMode } = useSiteSettings();
 
-                  {/* Protected Routes */}
-                  <Route path="/profile" element={
-                    <ProtectedRoute><Profile /></ProtectedRoute>
-                  } />
+  if (loading) {
+    return <PageLoader />;
+  }
 
-                  {/* 404 */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
+  if (maintenanceMode) {
+    return (
+      <>
+        <Suspense fallback={<PageLoader />}>
+          <Maintenance />
+        </Suspense>
 
-          {/* Toast Notifications */}
-          <Toaster
-            position="bottom-right"
-            reverseOrder={false}
-            gutter={8}
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#1e293b',
-                color: '#f8fafc',
-                borderRadius: '12px',
-                padding: '14px 18px',
-                fontSize: '0.9rem',
-                fontFamily: 'Poppins, sans-serif',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-              },
-              success: {
-                iconTheme: { primary: '#10b981', secondary: '#fff' },
-              },
-              error: {
-                iconTheme: { primary: '#ef4444', secondary: '#fff' },
-              },
-            }}
-          />
-        </CartProvider>
-      </AuthProvider>
-    </Router>
+        <Toaster
+          position="bottom-right"
+          reverseOrder={false}
+          gutter={8}
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#1e293b',
+              color: '#f8fafc',
+              borderRadius: '12px',
+              padding: '14px 18px',
+              fontSize: '0.9rem',
+              fontFamily: 'Poppins, sans-serif',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+            },
+            success: {
+              iconTheme: { primary: '#10b981', secondary: '#fff' },
+            },
+            error: {
+              iconTheme: { primary: '#ef4444', secondary: '#fff' },
+            },
+          }}
+        />
+      </>
+    );
+  }
+
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <ScrollToTop />
+        <div className="app">
+          <Navbar />
+          <main className="main-content">
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/:slug" element={<ProductDetail />} />
+                <Route path="/category/:slug" element={<Products />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/media" element={<Media />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+
+                {/* Auth Routes — redirect to home if already logged in */}
+                <Route path="/login" element={
+                  <AuthRoute><Login /></AuthRoute>
+                } />
+                <Route path="/signup" element={
+                  <AuthRoute><Signup /></AuthRoute>
+                } />
+                <Route path="/forgot-password" element={
+                  <AuthRoute><ForgotPassword /></AuthRoute>
+                } />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+                {/* Protected Routes */}
+                <Route path="/profile" element={
+                  <ProtectedRoute><Profile /></ProtectedRoute>
+                } />
+
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
+
+        {/* Toast Notifications */}
+        <Toaster
+          position="bottom-right"
+          reverseOrder={false}
+          gutter={8}
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#1e293b',
+              color: '#f8fafc',
+              borderRadius: '12px',
+              padding: '14px 18px',
+              fontSize: '0.9rem',
+              fontFamily: 'Poppins, sans-serif',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+            },
+            success: {
+              iconTheme: { primary: '#10b981', secondary: '#fff' },
+            },
+            error: {
+              iconTheme: { primary: '#ef4444', secondary: '#fff' },
+            },
+          }}
+        />
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

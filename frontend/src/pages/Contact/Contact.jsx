@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { sendContactForm } from '../../utils/api';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import './Contact.css';
 
 const Contact = () => {
+  const { contact } = useSiteSettings();
   const [formData, setFormData] = useState({
     name   : '',
     email  : '',
@@ -53,10 +55,10 @@ const Contact = () => {
   };
 
   const contactInfo = [
-    { icon: 'location_on', title: 'Address',     value: '123 Care Street, City, Country' },
-    { icon: 'email',       title: 'Email',       value: 'info@moniluck.com', link: 'mailto:info@moniluck.com' },
-    { icon: 'phone',       title: 'Phone',       value: '+1 (234) 567-890',  link: 'tel:+1234567890' },
-    { icon: 'schedule',    title: 'Working Hours',value: 'Mon – Sat: 9AM – 7PM' },
+    { icon: 'location_on', title: 'Address',      value: contact.address },
+    { icon: 'email',       title: 'Email',        value: contact.email, link: `mailto:${contact.email}` },
+    { icon: 'phone',       title: 'Phone',        value: contact.phone, link: `tel:${contact.phone}` },
+    { icon: 'schedule',    title: 'Working Hours', value: contact.hours },
   ];
 
   return (

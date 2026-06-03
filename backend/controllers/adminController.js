@@ -41,6 +41,43 @@ const normalizeImageList = (images) => {
   return [];
 };
 
+const defaultSiteSettings = {
+  site_name: 'Moniluck',
+  site_tagline: 'Care For Every Corner of Your Life',
+  footer_description: 'Premium care products for every corner of your life. From home to personal care — we\'ve got you covered.',
+  contact_email: 'info@moniluck.com',
+  contact_phone: '+880 1XXX-XXXXXX',
+  contact_address: 'Dhaka, Bangladesh',
+  contact_hours: 'Mon – Sat: 9AM – 7PM',
+  free_shipping_enabled: 'true',
+  free_shipping_min: '50',
+  shipping_cost: '5.99',
+  express_shipping_cost: '12.99',
+  same_day_shipping_cost: '19.99',
+  standard_shipping_time: '5–7 Business Days',
+  express_shipping_time: '2–3 Business Days',
+  same_day_shipping_time: 'Dhaka Only',
+  currency_symbol: 'Tk',
+  social_facebook: '',
+  social_instagram: '',
+  social_twitter: '',
+  social_youtube: '',
+  meta_title: 'Moniluck | Care For Every Corner of Your Life',
+  meta_description: 'Premium care products for home, kitchen, personal and clothing needs.',
+  privacy_policy_url: '#',
+  terms_of_service_url: '#',
+  refund_policy_url: '#',
+  maintenance_mode: 'false',
+};
+
+const buildSiteSettingsObject = (settings) => ({
+  ...defaultSiteSettings,
+  ...settings.reduce((acc, setting) => {
+    acc[setting.setting_key] = setting.setting_val;
+    return acc;
+  }, {}),
+});
+
 exports.uploadProductImage = async (req, res, next) => {
   try {
     if (!req.file) {
@@ -72,80 +109,252 @@ exports.uploadProductImage = async (req, res, next) => {
 
 exports.getDashboard = async (req, res, next) => {
   try {
-    const [totalProducts]    = await query('SELECT COUNT(*) AS count FROM products');
-    const [activeProducts]   = await query('SELECT COUNT(*) AS count FROM products WHERE is_active = 1');
-    const [totalCategories]  = await query('SELECT COUNT(*) AS count FROM categories');
-    const [totalUsers]       = await query('SELECT COUNT(*) AS count FROM users WHERE role = "customer"');
-    const [totalOrders]      = await query('SELECT COUNT(*) AS count FROM orders');
-    const [pendingOrders]    = await query('SELECT COUNT(*) AS count FROM orders WHERE status = "pending"');
-    const [totalRevenue]     = await query('SELECT COALESCE(SUM(total), 0) AS revenue FROM orders WHERE payment_status = "paid"');
-    const [totalSubscribers] = await query('SELECT COUNT(*) AS count FROM newsletter_subscribers WHERE is_active = 1');
-    const [totalReviews]     = await query('SELECT COUNT(*) AS count FROM reviews');
+    // ─── Core Stats ────────────────────────────────────────────────────
+    const [[totalProducts]]    = [await query('SELECT COUNT(*) AS count FROM products')];
+    const [[activeProducts]]   = [await query('SELECT COUNT(*) AS count FROM products WHERE is_active = 1')];
+    const [[inactiveProducts]] = [await query('SELECT COUNT(*) AS count FROM products WHERE is_active = 0')];
+    const [[totalCategories]]  = [await query('SELECT COUNT(*) AS count FROM categories')];
+    const [[totalUsers]]       = [await query('SELECT COUNT(*) AS count FROM users WHERE role = "customer"')];
+    const [[newUsersToday]]    = [await query('SELECT COUNT(*) AS count FROM users WHERE role = "customer" AND DATE(created_at) = CURDATE()')];
+    const [[newUsersWeek]]     = [await query('SELECT COUNT(*) AS count FROM users WHERE role = "customer" AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)')];
+    const [[totalOrders]]      = [await query('SELECT COUNT(*) AS count FROM orders')];
+    const [[pendingOrders]]    = [await query('SELECT COUNT(*) AS count FROM orders WHERE status = "pending"')];
+    const [[processingOrders]] = [await query('SELECT COUNT(*) AS count FROM orders WHERE status = "processing"')];
+    const [[shippedOrders]]    = [await query('SELECT COUNT(*) AS count FROM orders WHERE status = "shipped"')];
+    const [[deliveredOrders]]  = [await query('SELECT COUNT(*) AS count FROM orders WHERE status = "delivered"')];
+    const [[cancelledOrders]]  = [await query('SELECT COUNT(*) AS count FROM orders WHERE status = "cancelled"')];
+    const [[totalRevenue]]     = [await query('SELECT COALESCE(SUM(total), 0) AS revenue FROM orders WHERE payment_status = "paid"')];
+    const [[totalSubscribers]] = [await query('SELECT COUNT(*) AS count FROM newsletter_subscribers WHERE is_active = 1')];
+    const [[totalReviews]]     = [await query('SELECT COUNT(*) AS count FROM reviews')];
+    const [[pendingReviews]]   = [await query('SELECT COUNT(*) AS count FROM reviews WHERE is_approved = 0')];
+    const [[outOfStock]]       = [await query('SELECT COUNT(*) AS count FROM products WHERE stock = 0 AND is_active = 1')];
 
-    // Recent orders
+    // ─── Today's Stats ─────────────────────────────────────────────────
+    const [[todayOrders]]  = [await query('SELECT COUNT(*) AS count, COALESCE(SUM(total), 0) AS revenue FROM orders WHERE DATE(created_at) = CURDATE()')];
+    const [[yesterdayOrders]] = [await query('SELECT COUNT(*) AS count, COALESCE(SUM(total), 0) AS revenue FROM orders WHERE DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)')];
+
+    // ─── This Week Stats ───────────────────────────────────────────────
+    const [[weekOrders]]  = [await query('SELECT COUNT(*) AS count, COALESCE(SUM(total), 0) AS revenue FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)')];
+    const [[lastWeekOrders]] = [await query('SELECT COUNT(*) AS count, COALESCE(SUM(total), 0) AS revenue FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 14 DAY) AND created_at < DATE_SUB(NOW(), INTERVAL 7 DAY)')];
+
+    // ─── This Month Stats ──────────────────────────────────────────────
+    const [[monthOrders]]  = [await query('SELECT COUNT(*) AS count, COALESCE(SUM(total), 0) AS revenue FROM orders WHERE MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')];
+    const [[lastMonthOrders]] = [await query('SELECT COUNT(*) AS count, COALESCE(SUM(total), 0) AS revenue FROM orders WHERE MONTH(created_at) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(created_at) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH))')];
+
+    // ─── Average Order Value ───────────────────────────────────────────
+    const [[avgOrder]] = [await query('SELECT COALESCE(AVG(total), 0) AS avg_value FROM orders WHERE payment_status = "paid"')];
+
+    // ─── Conversion Rate (orders / users) ──────────────────────────────
+    const conversionRate = totalUsers.count > 0
+      ? ((totalOrders.count / totalUsers.count) * 100).toFixed(1)
+      : '0.0';
+
+    // ─── Growth Calculations ───────────────────────────────────────────
+    const calcGrowth = (current, previous) => {
+      if (!previous || previous === 0) return current > 0 ? 100 : 0;
+      return (((current - previous) / previous) * 100).toFixed(1);
+    };
+
+    // ─── Recent Orders ─────────────────────────────────────────────────
     const recentOrders = await query(
-      `SELECT o.id, o.order_number, o.status, o.payment_status, o.total, o.created_at,
-              CONCAT(o.ship_first_name, ' ', o.ship_last_name) AS customer_name
+      `SELECT o.id, o.order_number, o.status, o.payment_status, o.payment_method,
+              o.total, o.created_at,
+              CONCAT(o.ship_first_name, ' ', o.ship_last_name) AS customer_name,
+              o.ship_email,
+              (SELECT COUNT(*) FROM order_items oi WHERE oi.order_id = o.id) AS item_count
        FROM orders o
        ORDER BY o.created_at DESC
        LIMIT 10`
     );
 
-    // Top products
+    // ─── Top Selling Products ──────────────────────────────────────────
     const topProducts = await query(
       `SELECT p.id, p.name, p.slug, p.thumbnail, p.price, p.stock, p.rating, p.review_count,
-              c.name AS category_name
+              c.name AS category_name,
+              COALESCE(SUM(oi.quantity), 0) AS total_sold,
+              COALESCE(SUM(oi.total), 0) AS total_revenue
        FROM products p
        LEFT JOIN categories c ON c.id = p.category_id
+       LEFT JOIN order_items oi ON oi.product_id = p.id
        WHERE p.is_active = 1
-       ORDER BY p.review_count DESC, p.rating DESC
-       LIMIT 5`
+       GROUP BY p.id
+       ORDER BY total_sold DESC, p.rating DESC
+       LIMIT 8`
     );
 
-    // Low stock products
+    // ─── Low Stock Products ────────────────────────────────────────────
     const lowStock = await query(
-      `SELECT id, name, slug, stock, sku FROM products
+      `SELECT id, name, slug, stock, sku, price FROM products
        WHERE is_active = 1 AND stock <= 10
        ORDER BY stock ASC
        LIMIT 10`
     );
 
-    // Orders by status
+    // ─── Orders by Status ──────────────────────────────────────────────
     const ordersByStatus = await query(
-      `SELECT status, COUNT(*) AS count FROM orders GROUP BY status`
+      `SELECT status, COUNT(*) AS count FROM orders GROUP BY status ORDER BY FIELD(status, 'pending','confirmed','processing','shipped','delivered','cancelled','refunded')`
     );
 
-    // Monthly revenue (last 6 months)
+    // ─── Monthly Revenue (last 12 months) ──────────────────────────────
     const monthlyRevenue = await query(
       `SELECT
-         DATE_FORMAT(created_at, '%Y-%m') AS month,
+         DATE_FORMAT(MIN(created_at), '%Y-%m') AS month,
+         DATE_FORMAT(MIN(created_at), '%b %y') AS label,
          COUNT(*) AS orders,
          COALESCE(SUM(total), 0) AS revenue
        FROM orders
-       WHERE payment_status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+       WHERE payment_status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
        ORDER BY month ASC`
     );
 
+    // ─── Daily Orders (last 30 days) ───────────────────────────────────
+    const dailyOrders = await query(
+      `SELECT
+         DATE(created_at) AS date,
+         DATE_FORMAT(MIN(created_at), '%d %b') AS label,
+         COUNT(*) AS orders,
+         COALESCE(SUM(total), 0) AS revenue
+       FROM orders
+       WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+       GROUP BY DATE(created_at)
+       ORDER BY date ASC`
+    );
+
+    // ─── Revenue by Category ───────────────────────────────────────────
+    const revenueByCategory = await query(
+      `SELECT
+         c.name AS category,
+         c.slug,
+         COUNT(DISTINCT o.id) AS order_count,
+         COALESCE(SUM(oi.total), 0) AS revenue,
+         COALESCE(SUM(oi.quantity), 0) AS units_sold
+       FROM categories c
+       LEFT JOIN products p ON p.category_id = c.id
+       LEFT JOIN order_items oi ON oi.product_id = p.id
+       LEFT JOIN orders o ON o.id = oi.order_id AND o.payment_status = 'paid'
+       WHERE c.is_active = 1
+       GROUP BY c.id
+       ORDER BY revenue DESC`
+    );
+
+    // ─── Payment Methods Distribution ──────────────────────────────────
+    const paymentMethods = await query(
+      `SELECT payment_method, COUNT(*) AS count, COALESCE(SUM(total), 0) AS total_amount
+       FROM orders
+       GROUP BY payment_method
+       ORDER BY count DESC`
+    );
+
+    // ─── Recent Customers ──────────────────────────────────────────────
+    const recentCustomers = await query(
+      `SELECT u.id, u.first_name, u.last_name, u.email, u.created_at,
+              (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) AS order_count,
+              (SELECT COALESCE(SUM(o2.total), 0) FROM orders o2 WHERE o2.user_id = u.id AND o2.payment_status = 'paid') AS total_spent
+       FROM users u
+       WHERE u.role = 'customer'
+       ORDER BY u.created_at DESC
+       LIMIT 5`
+    );
+
+    // ─── Top Customers by Spending ─────────────────────────────────────
+    const topCustomers = await query(
+      `SELECT u.id, u.first_name, u.last_name, u.email,
+              COUNT(o.id) AS order_count,
+              COALESCE(SUM(o.total), 0) AS total_spent
+       FROM users u
+       JOIN orders o ON o.user_id = u.id AND o.payment_status = 'paid'
+       WHERE u.role = 'customer'
+       GROUP BY u.id
+       ORDER BY total_spent DESC
+       LIMIT 5`
+    );
+
+    // ─── Recent Reviews ────────────────────────────────────────────────
+    const recentReviews = await query(
+      `SELECT r.id, r.rating, r.title, r.body, r.is_approved, r.created_at,
+              p.name AS product_name,
+              CONCAT(u.first_name, ' ', u.last_name) AS reviewer_name
+       FROM reviews r
+       LEFT JOIN products p ON p.id = r.product_id
+       LEFT JOIN users u ON u.id = r.user_id
+       ORDER BY r.created_at DESC
+       LIMIT 5`
+    );
+
+    // ─── Hourly Order Distribution (today) ─────────────────────────────
+    const hourlyOrders = await query(
+      `SELECT
+         HOUR(created_at) AS hour,
+         COUNT(*) AS count
+       FROM orders
+       WHERE DATE(created_at) = CURDATE()
+       GROUP BY HOUR(created_at)
+       ORDER BY hour ASC`
+    );
+
+    // Fill missing hours with 0
+    const hourlyData = Array.from({ length: 24 }, (_, i) => {
+      const found = hourlyOrders.find(h => h.hour === i);
+      return { hour: `${String(i).padStart(2, '0')}:00`, orders: found ? found.count : 0 };
+    });
+
+    // ─── Compose Response ──────────────────────────────────────────────
     res.status(200).json({
       success: true,
       dashboard: {
         stats: {
           totalProducts   : totalProducts.count,
           activeProducts  : activeProducts.count,
+          inactiveProducts: inactiveProducts.count,
           totalCategories : totalCategories.count,
           totalUsers      : totalUsers.count,
+          newUsersToday   : newUsersToday.count,
+          newUsersWeek    : newUsersWeek.count,
           totalOrders     : totalOrders.count,
           pendingOrders   : pendingOrders.count,
+          processingOrders: processingOrders.count,
+          shippedOrders   : shippedOrders.count,
+          deliveredOrders : deliveredOrders.count,
+          cancelledOrders : cancelledOrders.count,
           totalRevenue    : parseFloat(totalRevenue.revenue),
           totalSubscribers: totalSubscribers.count,
           totalReviews    : totalReviews.count,
+          pendingReviews  : pendingReviews.count,
+          outOfStock      : outOfStock.count,
+          avgOrderValue   : parseFloat(avgOrder.avg_value),
+          conversionRate  : parseFloat(conversionRate),
+        },
+        today: {
+          orders        : todayOrders.count,
+          revenue       : parseFloat(todayOrders.revenue),
+          ordersGrowth  : parseFloat(calcGrowth(todayOrders.count, yesterdayOrders.count)),
+          revenueGrowth : parseFloat(calcGrowth(parseFloat(todayOrders.revenue), parseFloat(yesterdayOrders.revenue))),
+        },
+        thisWeek: {
+          orders        : weekOrders.count,
+          revenue       : parseFloat(weekOrders.revenue),
+          ordersGrowth  : parseFloat(calcGrowth(weekOrders.count, lastWeekOrders.count)),
+          revenueGrowth : parseFloat(calcGrowth(parseFloat(weekOrders.revenue), parseFloat(lastWeekOrders.revenue))),
+        },
+        thisMonth: {
+          orders        : monthOrders.count,
+          revenue       : parseFloat(monthOrders.revenue),
+          ordersGrowth  : parseFloat(calcGrowth(monthOrders.count, lastMonthOrders.count)),
+          revenueGrowth : parseFloat(calcGrowth(parseFloat(monthOrders.revenue), parseFloat(lastMonthOrders.revenue))),
         },
         recentOrders,
         topProducts,
         lowStock,
         ordersByStatus,
         monthlyRevenue,
+        dailyOrders,
+        revenueByCategory,
+        paymentMethods,
+        recentCustomers,
+        topCustomers,
+        recentReviews,
+        hourlyData,
       },
     });
   } catch (error) {
@@ -554,9 +763,9 @@ exports.getUsers = async (req, res, next) => {
     const params = [];
 
     if (search) {
-      conditions.push('(u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)');
+      conditions.push('(u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)');
       const s = `%${search}%`;
-      params.push(s, s, s);
+      params.push(s, s, s, s);
     }
     if (role) { conditions.push('u.role = ?'); params.push(role); }
     if (status === 'active')   conditions.push('u.is_active = 1');
@@ -807,8 +1016,18 @@ exports.deleteSubscriber = async (req, res, next) => {
 exports.getSettings = async (req, res, next) => {
   try {
     const settings = await query('SELECT * FROM site_settings ORDER BY id ASC');
-    const settingsObj = {};
-    settings.forEach(s => { settingsObj[s.setting_key] = s.setting_val; });
+    const settingsObj = buildSiteSettingsObject(settings);
+
+    res.status(200).json({ success: true, settings: settingsObj, settingsList: settings });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getPublicSettings = async (req, res, next) => {
+  try {
+    const settings = await query('SELECT setting_key, setting_val, setting_type, description FROM site_settings ORDER BY id ASC');
+    const settingsObj = buildSiteSettingsObject(settings);
 
     res.status(200).json({ success: true, settings: settingsObj, settingsList: settings });
   } catch (error) {
@@ -822,8 +1041,10 @@ exports.updateSettings = async (req, res, next) => {
 
     for (const [key, value] of Object.entries(settings)) {
       await query(
-        'UPDATE site_settings SET setting_val = ? WHERE setting_key = ?',
-        [value !== null && value !== undefined ? String(value) : null, key]
+        `INSERT INTO site_settings (setting_key, setting_val)
+         VALUES (?, ?)
+         ON DUPLICATE KEY UPDATE setting_val = VALUES(setting_val)`,
+        [key, value !== null && value !== undefined ? String(value) : null]
       );
     }
 

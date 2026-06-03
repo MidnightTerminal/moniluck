@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { fetchMyOrders } from '../../utils/api';
+import { formatDhakaDate, formatDhakaDateTime } from '../../utils/helpers';
 import './Profile.css';
 
 const PROFILE_TABS = [
@@ -116,11 +117,6 @@ const Profile = () => {
 
   const selectedTrackOrder = orders.find(order => String(order.id) === String(selectedOrderId)) || orders[0] || null;
   const selectedOrderStep = TRACKING_STEP_INDEX[selectedTrackOrder?.status] ?? 0;
-
-  const formatTrackingDate = (value) => {
-    if (!value) return '—';
-    return new Date(value).toLocaleString();
-  };
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -460,7 +456,7 @@ const Profile = () => {
                       >
                         {orders.map(order => (
                           <option key={order.id} value={order.id}>
-                            {order.order_number} - {new Date(order.created_at).toLocaleDateString()}
+                            {order.order_number} - {formatDhakaDate(order.created_at)}
                           </option>
                         ))}
                       </select>
@@ -475,7 +471,7 @@ const Profile = () => {
                           </div>
                           <div>
                             <span className="track-order__label">Placed On</span>
-                            <strong>{formatTrackingDate(selectedTrackOrder.created_at)}</strong>
+                            <strong>{formatDhakaDateTime(selectedTrackOrder.created_at)}</strong>
                           </div>
                           <div>
                             <span className="track-order__label">Payment Status</span>

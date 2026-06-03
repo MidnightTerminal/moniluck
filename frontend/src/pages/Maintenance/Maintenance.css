@@ -1,0 +1,223 @@
+.maintenance-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-lg);
+  background:
+    radial-gradient(circle at top left, rgba(102,126,234,0.18), transparent 36%),
+    radial-gradient(circle at bottom right, rgba(240,147,251,0.16), transparent 38%),
+    linear-gradient(180deg, #f8faff 0%, #eef4ff 100%);
+}
+
+.maintenance-page__bg {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+.maintenance-page__bg--one {
+  width: 340px;
+  height: 340px;
+  background: rgba(102,126,234,0.12);
+  top: -120px;
+  right: -80px;
+}
+
+.maintenance-page__bg--two {
+  width: 260px;
+  height: 260px;
+  background: rgba(245,87,108,0.12);
+  bottom: -100px;
+  left: -70px;
+}
+
+.maintenance-page__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.maintenance-card {
+  position: relative;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 24px 80px rgba(45,55,120,0.14);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-3xl);
+  text-align: center;
+}
+
+.maintenance-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(102,126,234,0.12);
+  color: var(--primary-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: var(--space-xl);
+}
+
+.maintenance-card__icon-wrap {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto var(--space-xl);
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.maintenance-card__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(102,126,234,0.15);
+}
+
+.maintenance-card__ring--outer {
+  animation: maintenancePulse 4s ease-in-out infinite;
+}
+
+.maintenance-card__ring--inner {
+  inset: 18px;
+  border-style: dashed;
+  border-color: rgba(245,87,108,0.22);
+  animation: maintenanceSpin 18s linear infinite;
+}
+
+.maintenance-card__icon {
+  font-size: 3rem;
+  color: var(--primary);
+}
+
+.maintenance-card h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: var(--space-sm);
+}
+
+.maintenance-card__lead {
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: 1.02rem;
+  color: var(--text-body);
+}
+
+.maintenance-card__tagline {
+  margin-top: var(--space-md);
+  color: var(--text-mid);
+  font-weight: 500;
+}
+
+.maintenance-card__info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-2xl);
+  text-align: left;
+}
+
+.maintenance-card__info-item {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(248,249,255,0.9);
+  border: 1px solid rgba(226,232,240,0.9);
+}
+
+.maintenance-card__info-item .material-icons-round {
+  color: var(--primary);
+  font-size: 1.5rem;
+  margin-top: 2px;
+}
+
+.maintenance-card__info-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-dark);
+}
+
+.maintenance-card__info-item p {
+  color: var(--text-mid);
+  font-size: 0.92rem;
+}
+
+.maintenance-card__info-item a {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.maintenance-card__contact {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: var(--space-xl);
+}
+
+.maintenance-card__contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  background: rgba(102,126,234,0.08);
+  color: var(--text-dark);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.maintenance-card__contact-link .material-icons-round {
+  font-size: 1rem;
+  color: var(--primary);
+}
+
+.maintenance-card__button {
+  margin-top: var(--space-2xl);
+}
+
+@keyframes maintenancePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes maintenanceSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .maintenance-page {
+    padding: var(--space-lg);
+  }
+
+  .maintenance-card {
+    padding: var(--space-2xl) var(--space-lg);
+  }
+
+  .maintenance-card__info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .maintenance-card__icon-wrap {
+    width: 112px;
+    height: 112px;
+  }
+
+  .maintenance-card__icon {
+    font-size: 2.5rem;
+  }
+}

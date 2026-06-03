@@ -4,17 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { placeOrder as submitOrder } from '../../utils/api';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
+import { resolveAssetUrl } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 import './Checkout.css';
 
 const STEPS = ['Information', 'Shipping', 'Payment', 'Confirmation'];
-const FREE_SHIPPING_THRESHOLD = 50;
-const SHIPPING_COST = 5.99;
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems, cartSubtotal, cartSavings, cartCount, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
+  const { shipping, siteName } = useSiteSettings();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading]         = useState(false);
@@ -50,7 +51,24 @@ const Checkout = () => {
 
   const [errors, setErrors] = useState({});
 
-  const shippingCost = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const hasFreeShipping = shipping.freeShippingEnabled && cartSubtotal >= shipping.freeShippingMin;
+  const getShippingCost = (methodId) => {
+    if (methodId === 'standard') {
+      return hasFreeShipping ? 0 : shipping.standard.cost;
+    }
+
+    if (methodId === 'express') {
+      return shipping.express.cost;
+    }
+
+    if (methodId === 'same_day') {
+      return shipping.sameDay.cost;
+    }
+
+    return shipping.standard.cost;
+  };
+
+  const shippingCost = getShippingCost(formData.shipping_method);
   const orderTotal   = cartSubtotal + shippingCost;
 
   /* ─── Redirect if cart empty ─────────────────────────────────────────── */
@@ -291,9 +309,9 @@ const Checkout = () => {
             <div className="checkout-section">
               <div className="shipping-methods">
                 {[
-                  { id: 'standard', name: 'Standard Delivery',  time: '5–7 Business Days', price: cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 'Free' : `Tk ${SHIPPING_COST}`, icon: 'local_shipping' },
-                  { id: 'express',  name: 'Express Delivery',   time: '2–3 Business Days', price: 'Tk 12.99', icon: 'flight_takeoff' },
-                  { id: 'same_day', name: 'Same Day Delivery',  time: 'Dhaka Only',        price: 'Tk 19.99', icon: 'bolt' },
+                  { id: 'standard', name: 'Standard Delivery', time: shipping.standard.time, price: hasFreeShipping ? 'Free' : `Tk ${shipping.standard.cost}`, icon: 'local_shipping' },
+                  { id: 'express',  name: 'Express Delivery',  time: shipping.express.time, price: `Tk ${shipping.express.cost}`, icon: 'flight_takeoff' },
+                  { id: 'same_day', name: 'Same Day Delivery',  time: shipping.sameDay.time, price: `Tk ${shipping.sameDay.cost}`, icon: 'bolt' },
                 ].map(method => (
                   <label
                     key={method.id}
@@ -466,7 +484,7 @@ const Checkout = () => {
             <h2 className="confirmation-title">Order Placed Successfully!</h2>
             <p className="confirmation-order-id">Order ID: <strong>{orderId}</strong></p>
             <p className="confirmation-message">
-              Thank you for shopping with Moniluck! Your order has been confirmed and 
+              Thank you for shopping with {siteName}! Your order has been confirmed and 
               you will receive an email confirmation shortly at <strong>{formData.email}</strong>.
             </p>
 
@@ -602,7 +620,16 @@ const Checkout = () => {
                 {cartItems.map(item => (
                   <div key={item.id} className="checkout-summary__item">
                     <div className="checkout-summary__item-image">
-                      <span className="material-icons-round">shopping_bag</span>
+                      {item.thumbnail ? (
+                        <img
+                          src={resolveAssetUrl(item.thumbnail)}
+                          alt={item.name}
+                          className="checkout-summary__item-media"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="material-icons-round">shopping_bag</span>
+                      )}
                       <span className="checkout-summary__item-qty">{item.quantity}</span>
                     </div>
                     <div className="checkout-summary__item-info">
@@ -633,7 +660,7 @@ const Checkout = () => {
                 <div className="checkout-summary__row">
                   <span>Shipping</span>
                   <span className={shippingCost === 0 ? 'checkout-summary__free' : ''}>
-                    {shippingCost === 0 ? 'Free' : `Tk ${shippingCost.toFixed(2)}`}
+                    {hasFreeShipping ? 'Free' : `Tk ${shippingCost.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="checkout-summary__divider" />
