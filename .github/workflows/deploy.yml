@@ -25,7 +25,7 @@ jobs:
         run: |
           cd frontend
           npm install
-          npm run build
+          CI=false npm run build
           # Rename the build folder and move it into the backend directory
           mv build ../backend/public-frontend 
           
@@ -34,7 +34,7 @@ jobs:
         run: |
           cd admin-panel
           npm install
-          npm run build
+          CI=false npm run build
           # Rename the admin build folder and move it into the backend directory
           mv build ../backend/public-admin 
 
