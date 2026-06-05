@@ -38,10 +38,10 @@
   transition: var(--transition-base);
 }
 
-.brand-card:hover .brand-card__logo-placeholder {
+/* .brand-card:hover .brand-card__logo-placeholder {
   background: rgba(102, 126, 234, 0.08);
   color: var(--primary);
-}
+} */
 
 .brand-card__logo-placeholder img {
   width: 100%;

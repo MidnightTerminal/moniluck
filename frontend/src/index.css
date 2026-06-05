@@ -155,7 +155,7 @@ input, textarea, select { font-family: var(--font-primary); outline: none; }
 }
 
 .section-padding-sm {
-  padding: var(--space-3xl) 0;
+  padding: var(--space-3xl) 0 0 0;
 }
 
 .text-center { text-align: center; }
